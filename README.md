@@ -1,40 +1,10 @@
 # DeJoRo-Bilateral
 Official repository for the paper (link)
-```javascript
-function test(){
-	console.log("Hello world!");
-}
- 
-(function(){
-    var box = function(){
-        return box.fn.init();
-    };
+This repository focuses on the bilateral negotiation algorithm proposed in the article "Reaching an Equilibrium of Prices and Holdings of Goods through Direct Buying and Selling." The main approaches are:
+**Table of contents**
 
-    box.prototype = box.fn = {
-        init : function(){
-            console.log('box.init()');
+[TOCM]
 
-			return this;
-        },
+[TOC]
 
-		add : function(str){
-			alert("add", str);
-
-			return this;
-		},
-
-		remove : function(str){
-			alert("remove", str);
-
-			return this;
-		}
-    };
-    
-    box.fn.init.prototype = box.fn;
-    
-    window.box =box;
-})();
-
-var testBox = box();
-testBox.add("jQuery").remove("jQuery");
-```
+# H1 HEADER
