@@ -8,4 +8,6 @@ This repository focuses on the bilateral negotiation algorithm proposed in the a
 
 # Installing libraries for example 3
 
-    import pandas as pd
+```python
+pip install pandas
+```
