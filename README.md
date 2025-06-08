@@ -7,3 +7,6 @@ This repository focuses on the bilateral negotiation algorithm proposed in the a
 # Installing libraries for example 2
 
 # Installing libraries for example 3
+```javascript
+pip install pandas
+```
