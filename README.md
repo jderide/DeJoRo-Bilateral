@@ -528,5 +528,56 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
 [Falta agregar los nuevos graficos de araña creados y poner entre que linea se esta documentando]
 
 #### Installing libraries and configurations to run the code
-First you have to open the Anaconda prompt, searching for it from the search bar of the PC. The Anaconda prompt can be found by going to the search option in the Windows taskbar.
+- A. First you have to open the Anaconda prompt, searching for it from the search bar of the PC. The Anaconda prompt can be found by going to the search option in the Windows taskbar. 
+
+<img width="959" alt="Image" src="https://github.com/user-attachments/assets/51afe7d7-aa57-4f14-940d-97a3f79f322b" />
+
+- B. Then search for "Anaconda Prompt" in the taskbar search box and click
+
+<img width="702" alt="Image" src="https://github.com/user-attachments/assets/65d2c4cc-37aa-4c81-9303-1a7eaca9c466" />
+
+- C. The following tab will open once you click on the anaconda prompt
+
+<img width="905" alt="Image" src="https://github.com/user-attachments/assets/8f1d603d-6558-45cb-89bd-b43fac80bef1" />
+
+- D. Once in the Anaconda prompt, follow these steps to install the libraries to run the code in Jupyter.
+    - D.1. First, you need to create a Python 3.11 environment with the following command:
+
+      <img width="884" alt="Image" src="https://github.com/user-attachments/assets/f83a21a7-3d04-441e-b7b2-c3553df49fb6" />
+       
+      This is because an error will appear regarding the imp module, which consists of the fact that this module was marked        as obsolete for Python 3.4 and was already removed in Python 3.12, so Python 3.11 is the most modern library that            contains the imp module for the pyutilib library to work.
+
+    - D.2. After this, the created environment is activated with the following command:
+ 
+      <img width="894" alt="Image" src="https://github.com/user-attachments/assets/6328dfc9-021a-4ea0-9666-7f5bae1c51c2" />
+
+    - D.3. Once inside the py311 environment, the following anaconda installation extension is installed:  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
