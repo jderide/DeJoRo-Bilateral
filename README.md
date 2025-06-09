@@ -565,7 +565,24 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
 
       <img width="906" alt="Image" src="https://github.com/user-attachments/assets/f3843785-0eb5-4f2b-bdb8-57a9ba76d244" />
 
-      
+- E. Once the library installations have been verified, proceed to install the newly created environment in the Jupyter kernel.
+    - E.1. Install ipykernel first:
+
+      <img width="894" alt="Image" src="https://github.com/user-attachments/assets/f8558af0-0650-4a1a-b587-4f9a5f1a55b0" />
+
+    - E.2. Register the environment in the Jupyter kernel after installing ipykernel as follows:
+
+      <img width="898" alt="Image" src="https://github.com/user-attachments/assets/7d2c23d8-313d-485d-8662-3a851904fb2b" />
+
+- F. As a final step, install MikTeX from the following website <https://miktex.org/download>
+
+Once these steps are completed, the first part of installing libraries and configurations to run example 1 is complete. Now we will show how to place the example in Jupyter and how to select the environment created previously in the kernel.
+
+
+- A. 
+
+
+  
 
 
 
