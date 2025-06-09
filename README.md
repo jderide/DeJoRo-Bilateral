@@ -551,7 +551,21 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
  
       <img width="894" alt="Image" src="https://github.com/user-attachments/assets/6328dfc9-021a-4ea0-9666-7f5bae1c51c2" />
 
-    - D.3. Once inside the py311 environment, the following anaconda installation extension is installed:  
+    - D.3. Once inside the py311 environment, the following channel is installed, which has a larger collection of software:
+ 
+      <img width="902" alt="Image" src="https://github.com/user-attachments/assets/d9131fbc-e108-47f5-83a3-ecd07ce79366" />
+
+    - D.4. Once Forge is installed, the libraries are installed as follows:
+ 
+      <img width="912" alt="Image" src="https://github.com/user-attachments/assets/ee4e3b96-16eb-4874-a7a9-9769bef3864a" />
+
+      Pyomo is used to formulate and model optimization models used in the BTE.py code, specifically the verification and          calculation of Walrasian equilibria in the context of the centralized economic model that this traditional equilibrium       has. These optimization models are designed to calculate Cobb-Douglas utility maximization subject to a budget               constraint and its corresponding price equilibrium. As the paper states, Walras solves linear equation problems              derived from first-order conditions for economies with Cobb-Douglas utilities. Pyomo has an extension called ipopt           that is used to solve non-linear optimization problems such as the Walrascheck method, which maximizes Cobb-Douglas          utility by producing the sub ij allocations of the agents raised to their preferences, distributed according to each         agent and good. This utility maximization, which is the objective function, has a budget restriction consisting of the       sum of the prices of each good per agent multiplied by the difference between the sub ij allocations of the agents           minus their sub ij initial endowments, which must be equal to or less than 0 to ensure that each agent starts with a         certain amount of money and initial allocations so that they can make the trades. Ipopt helps calculate this convex          non-linear optimization problem. After this, it verifies that the excess demand is close to 0 for all goods j, which         indicates a Walrasian equilibrium. Ipopt is invoked from pyomo and is used to find local maxima and find the x sub ij        that allow maximizing utilities, allocations and wealth through the prices p of each good. The pyutilib library is           used to measure the time taken to reach equilibrium using the bilateral market exchange method in each simulation. It        also complements and is efficient with the pyomo library.
+
+    - D.5. Verifying package installation:
+
+      <img width="906" alt="Image" src="https://github.com/user-attachments/assets/f3843785-0eb5-4f2b-bdb8-57a9ba76d244" />
+
+      
 
 
 
