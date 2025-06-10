@@ -576,6 +576,31 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
 
 - F. As a final step, install MikTeX from the following website <https://miktex.org/download>
 
+<img width="960" alt="Image" src="https://github.com/user-attachments/assets/8c407a5f-17c2-4d6c-98c6-2237e8037dd5" />
+
+- G. Follow the steps below for the executor:
+    - G.1. Accept the terms and conditions and press next:
+
+      <img width="409" alt="Image" src="https://github.com/user-attachments/assets/72c52e4c-3188-424a-bf2b-f8072e18bf11" />
+
+    - G.2. This section is optional (whether you want to download it for all users or just for yourself). Click Next:
+ 
+      <img width="401" alt="Image" src="https://github.com/user-attachments/assets/2a2a46b9-513e-4637-8b83-00c0a364af89" />
+
+    - G.3. The path where the mikTeX installation files will be saved is shown here. Click Next:
+ 
+      <img width="410" alt="Image" src="https://github.com/user-attachments/assets/2de067a5-e502-49de-a390-ffc19dbf7e63" />
+
+    - G.4. Select Yes for the second option to automatically install any missing packages the code may require. Click Next:
+ 
+      <img width="415" alt="Image" src="https://github.com/user-attachments/assets/3362558a-6815-4487-83de-8958861b78fe" />
+
+    - G.5. Start the installation:
+ 
+      <img width="393" alt="Image" src="https://github.com/user-attachments/assets/c297336f-84ba-4479-ba49-37d742367390" />
+  
+
+
 Once these steps are completed, the first part of installing libraries and configurations to run example 1 is complete. Now we will show how to place the example in Jupyter and how to select the environment created previously in the kernel.
 
 
