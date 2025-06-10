@@ -599,12 +599,58 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
  
       <img width="393" alt="Image" src="https://github.com/user-attachments/assets/c297336f-84ba-4479-ba49-37d742367390" />
   
+  Once these steps are completed, the first part of installing libraries and configurations to run example 1 is complete. Now we will show how to place the example in Jupyter and how to select the environment created previously in the kernel.
+
+- A. Open Anaconda by searching for it in the taskbar search:
+
+<img width="274" alt="Image" src="https://github.com/user-attachments/assets/7fc2d247-6f5b-49f0-83fb-c51cc8be4ef6" />
+
+- B. Open Jupyter from Anaconda once inside, by pressing "launch":
+
+<img width="959" alt="Image" src="https://github.com/user-attachments/assets/16a1cbbc-e8b7-4c98-b0ce-b84cfbb3b872" />
+
+- C. Download BTE and Final1 from the repository in the folder that says Ex1:
+
+<img width="873" alt="Image" src="https://github.com/user-attachments/assets/beff71c9-23cb-4850-8547-6fef2ae5fafc" />
+
+-D. Press BTE once inside:
+
+<img width="960" alt="Image" src="https://github.com/user-attachments/assets/1563d5a2-2260-4b95-853a-a96d7f27c747" />
+
+-E. Download BTE:
+
+<img width="960" alt="Image" src="https://github.com/user-attachments/assets/8326b172-dc44-4219-8f46-145cc46ac927" />
+
+Same process to download Final1.
+
+-F. Once saved in your computer's files, return to Jupyter. Press "Upload" to upload these two .py files:
+
+<img width="960" alt="Image" src="https://github.com/user-attachments/assets/27097dbf-d049-4365-82c8-980c272bf3d1" />
+
+-G. Now the two downloaded files are chosen (BTE and final1):
+
+<img width="514" alt="Image" src="https://github.com/user-attachments/assets/6071ec80-72f2-4947-85ab-46143b66e72f" />
+
+-H. Create a new notebook with the environment created in the New option:
+
+<img width="960" alt="Image" src="https://github.com/user-attachments/assets/22cd77fb-beeb-45bd-9b03-3b9233095142" />
+
+-I. Open Final1.py and copy its entire contents by selecting everything with Ctrl+A and Ctrl+V to copy. Copy it to the new notebook created with the Python 3.11 environment:
+
+Once all these steps have been completed, the code is ready to run and display all its outputs. The next section will show all its outputs and their explanations. It will confirm in detail that trades in bilateral exchanges are better than in Walras exchanges.
+
+#### Outputs
 
 
-Once these steps are completed, the first part of installing libraries and configurations to run example 1 is complete. Now we will show how to place the example in Jupyter and how to select the environment created previously in the kernel.
 
 
-- A. 
+
+  
+
+
+
+
+
 
 
   
