@@ -641,11 +641,11 @@ Once all these steps have been completed, the code is ready to run and display a
 
 #### Outputs
 
+The first output that will be launched are the times that it took to calculate the bilateral equilibrium for the different trials calculating the delta premiums and the optimal allocations of each of the 5 agents at each point for the 10 goods. After this, it launches values ​​of the standard deviation between the prices of each agent for each calculated trial and with their tolerance of the delta premium. After the 10 trials have passed, it can be observed that the console will say that equilibrium has been reached in 10 of the 10 simulations with their respective, with the average of the times that the bilateral algorithm took to find equilibrium and also places the number of iterations that the algorithm took to find an equilibrium in each of the 10 simulations as shown below:
 
+[Agregar foto del output del algoritmo]
 
-
-
-  
+  The times are measured in Final (which are measured with the ExTimes command in Final1) to evaluate the computational efficiency of the BTE algorithm compared to the Walrasian approach. This is important because it demonstrates that it not only converges theoretically, but also does so in a practical time, even for economies with many agents and goods. The time reflects the algorithm's scalability. Scalability refers to the algorithm's ability to maintain its efficiency (in terms of execution time and resource usage) as the problem grows in size and complexity. The paper shows that BTE reaches equilibrium for 5 agents and 9 goods in 2.12 seconds (median), and the problem for 10 agents and 100 goods converges in 711 seconds, which is approximately 12 minutes. While the time increases with the size of the problem, it does so in a manageable and predictable way. The growth in time is also not exponential, making it impractical for large economies. Time grows sustainably, allowing for the study of the effect of more agents and goods participating in the market, with realistic interactions between them. In contrast, the Walrasian system requires solving systems of linear equations (such as Walraseq() in Final1), which can become computationally expensive for many goods and agents. The BTE, on the other hand, avoids this and, being an iterative and decentralized process, avoids the need to solve global systems with linear equations, making it more scalable in practice without expending significant resources.
 
 
 
