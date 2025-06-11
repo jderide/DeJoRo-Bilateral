@@ -655,6 +655,42 @@ Then the output that the code launches are matrices of 10 x 9, where the rows re
 
 After this, a table is created where 4 tests of the algorithm (columns) are chosen for the 9 goods (rows) where the prices varied for each good are compared to make the comparison with the Walras prices, which are fixed without iterations. A price variation can be observed for good 1 between 0.9093905048137538 and 0.9473978286534999, coinciding with table 2 of the paper on page 21 of this, as well as the other goods. With respect to the Walras price, a similarity can be seen, indicating that the best way to reach equilibrium is with BTE, seeing that this value can be reached by the different ways of being able to trade between the different agents and goods and not just in one way, as is the restrictive Walrasian model. The BTE algorithm is highly efficient when searching for equilibrium prices, seeing how by establishing a maximum tolerance, prices remain stable in the different trades between agents with the different goods, obeying this slight restriction so as not to create discriminatory prices while maintaining utility between agents, seeking to improve their utility in each trade, quite the opposite of Walras, which is an established algorithm and does not allow free trading. 
 
+[Imagen]
+
+The rows and columns are then inverted, and the change in the allocations of each good for each of the four iterations randomly chosen by the code is observed, comparing the BTE allocations with the Walras allocations. It can be observed that the BTE allocations are very close to those of Walras and vary between very close values. In the example, the BTE allocations for good 1 for the four chosen iterations vary by a maximum of approximately 7 units, between the values ​​58 and 51. This good has a Walras value of approximately 51. It can be seen how agents in the BTE algorithm can correct their allocations to improve their positions jointly rather than individually, reaching a value greater than the Walras allocations. This also speaks to the dynamism of the algorithm in seeking the best allocations for everyone, better than those of Walras, which is an algorithm that makes trades with restrictions and in a single test.
+
+[Imagen]
+
+Now comes the section where you can see the graphics provided by this code.
+
+First, the code outputs the graph of Walras utilities vs. BTE, placing each algorithm on the y and x axes respectively. Then, an x=y function is plotted to observe which of the two algorithms had the highest utility (Points above the function, the Walras utility is better. Points below the function, the BTE utility is better). It can be observed how all the points for each of the iterations show that the Walras utility is better, all being on the dotted function line. This is not necessarily optimal; this means that the Walras utilities for each of the agents are completely unequal. This algorithm, having restrictions, does not allow its agents to want to improve their utilities jointly such that all have a similar utility. It can be seen in the 5 points plotted in the graph that there is a large difference between the agents' utilities for Walras. BTE, on the other hand, has lower utilities but manages to compensate by making everyone's utilities similar, with no inequality between agents.
+
+[Imagen]
+
+The code then generates a wealth graph, which follows the same logic as the first graph. Here, we can conclude the same thing as before. BTE's wealth is similar across agents and worse than in Walras, but Walras has very unequal wealth across its agents.
+
+[Imagen]
+
+A graph of the BTE vs. Walras Gini index is then drawn, indicating the inequality between each method, using the same logic as the other two graphs. As expected, the Walras Gini is greater than the BTE and remains at 0.4, as can be seen in the graph. The BTE Gini grows steadily with each iteration, with no more than 0.10 points on the Gini index, ensuring equality between agents.
+
+[Imagen]
+
+Ten graphs are then generated showing how utilities have evolved across the different trials of a test for each agent. The concave behavior of the curves with positive slope can be observed, as stated in the paper, reaching a limit where agents can no longer improve their utilities. The utility function is a Cobb-Douglas function that is convex, and the paper states on page 6 that when the preference equation is convex, it will always have a concave subset, as demonstrated by the graph. It can be seen that there is a relatively balanced utility among each of the agents in each of the iterations. The utilities are plotted on the y-axis, and the iterations of each test are plotted on the x-axis. This shows roughly at which iteration the utility equilibrium was reached.
+
+[Imagen]
+
+A graph called Page is then generated, which shows how the prices of each good evolved, where each good is placed on the x-axis and the prices are placed on the y-axis. Each good is represented in a boxplot. Boxplots are used to measure dispersion in a data set, showing the median and quartiles, which are data positioning measures, to know exactly where each of them is located. These graphs also consider atypical data, which are those that are far from the others. In this graph, atypical data are excluded. It can be observed in each boxplot that the dispersion is low due to their size; the interquartile range (the difference between the third and first quartiles) is low, presenting a low dispersion of the central data with a median that is approximately in the center of the box. This shows the reliability of the model and that agents are reaching agreements to arrive at a specific price.
+
+[Imagen]
+
+A graph called Pbar is then generated, which is the union of the medians of each boxplot from the previous graph for each iteration. The axes of the previous graph remain unchanged, but the boxplots are removed, demonstrating that in each iteration, prices remain virtually unchanged or the change is negligible.
+
+[Imagen]
+
+Finally, a graph called Pbardiffs is created. It randomly selects four iterations from the previous graph to clearly show the evolution without the other iterations interfering with the measurement. The logic is the same as Pbar.
+
+[Imagen]
+
 
 
 
