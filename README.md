@@ -39,6 +39,7 @@ In this section, the results of each of the three examples will be evaluated, as
 Here the documentation for example 1 will be placed to know what each part of the code does with its respective commands. we started.
 We document BTE first since it is the code needed for example 1 to run.
 #### BTE documentation
+**line 1 to 7**
 ```python   
 from __future__ import division
 import numpy as np
@@ -53,6 +54,7 @@ First, import the libraries described in the paper:
 - random (used for random processing of matrices)
 - Pyomo (used to solve optimization problems, using walrascheck to verify market equilibrium)
 - pyutilib (to see the times that have passed for each iteration)
+**lines 9 to 12**
 ```python
 def randomly(seq):
     shuffled = list(seq)
@@ -60,6 +62,7 @@ def randomly(seq):
     return iter(shuffled)
 ```
 Implement the random inspection of agents and goods mentioned in part 5 of the paper (random inspection strategy)
+**lines 17 to 28**
 ```python
 class Economy:
     def __init__(self,n,I):
@@ -81,6 +84,7 @@ The following matrices are initialized with respect to the class created above:
 - allocations: Current allocations, which can also be seen as the current iteration x_i (holdings)
 - e: Initial allocations, not yet iterated (initial holdings x_ij^0)
 - alpha: Utility parameter (beta_ij in the paper for Cobb Douglas functions)
+**lines 30 to 35**
 ```python
 def evalp(self,x):
         A = np.zeros((self.I,self.n-1))
@@ -90,6 +94,7 @@ def evalp(self,x):
         return A
 ```
 The evalp function is defined, where the agent's threshold prices p_ij(x_i) are calculated. Threshold price is understood as the agent's purchases and sales through an initial vector of goods or initial allocations. It is measured in units of the agent's utility per unit of price. It implements $p_{ij} = (\alpha_{ij}/\alpha_{i0}) \times (x_{i0}/x_{ij})$ for j>0 (equation 2.8 of the paper)
+**lines 38 to 48**
 ```python
  def xshort(self,i,j,pit):
         num = self.alpha[i,j+1]*self.allocations[i,0]-pit*self.alpha[i,0]*self.allocations[i,j+1]
@@ -104,6 +109,7 @@ The evalp function is defined, where the agent's threshold prices p_ij(x_i) are 
         return xi[np.argmax(uts)]
 ```
 It optimizes utilities by updating the buyers' holdings, iterating their allocations with the definition of xshort by a maximum quantity that an agent i is willing to buy of good j at a price pit. The buyer through his preferences sees the optimal quantity of good j that he buys and if it is better not to buy, with the option not to buy, or 0. Generating the new variable xi, if the buyer through a price pit and his preferences prefers to buy or it is better not to, to update the holdings, and with this the utility with a Cobb-Douglas function and evaluate the different scenarios, until the utility can not be improved more. The buyer makes monetary transactions and receives the goods as can be seen in pij, where he loses money, but receives goods, thus improving his utility depending on his preferences, until they can not be improved more (equation 2.20 of the paper).
+**lines 51 to 61**
 ```python
    def xlong(self,i,j,pit):
         num = self.alpha[i,0]*pit*self.allocations[i,j+1]-self.alpha[i,j+1]*self.allocations[i,0]
@@ -118,6 +124,7 @@ It optimizes utilities by updating the buyers' holdings, iterating their allocat
         return xi[np.argmax(uts)]
 ```
 It optimizes utilities by updating the sellers' holdings, iterating their allocations with the definition of xlong as a maximum quantity that an agent i is willing to sell of good j at a price pit. In the case of the seller, they will earn money by exchanging their products and this exchange will cause their goods to decrease. The seller sells, excuse the redundancy, according to their preferences. In this way, an xip is generated, which is the optimal quantity at which they will sell their products at a pit price. Now, unlike buyers, with sellers three scenarios are evaluated: not selling anything, selling the optimal quantity, or selling their entire stock. These three options are evaluated with xi and then added to the holdings, to have the new holdings of the seller, and in this way, utility can be calculated and evaluated according to these three scenarios to find the maximum level of utility that the sellers find according to their preferences. Once no more selling opportunities are found, the delta premiums are updated (equation 2.14 of the paper).
+**lines 63 to 127**
 ```python
  def Bilateral(self,eps_prices,MAXIT,lbda,delta_tol,inspection):
         EvPag = {}
@@ -193,6 +200,7 @@ The main algorithm of the paper in section 5 is implemented, which also explains
 - inspection: inspection strategy
 After this, structures are generated to store the price history, assignments, deltas, and time. Theorem 1 of the paper is then applied, where all agents must reach an agreement on prices, setting a maximum tolerance of the epsilon standard deviation that prices must fluctuate to close trades and ending the iterations by reaching a price equilibrium with a maximum tolerance given by eps_prices. After the prices are evaluated, the premiums must become increasingly smaller so that each trade tends toward a convergence between prices. This is what delta_tol is for, which is a maximum tolerance for deltas once they are very small, meaning that equilibrium is being reached. If equilibrium is not reached using eps_prices and delta_tol, the following lines of code, if and elif, are activated. The first three lines of code with the if and random are to make combinations between agents randomly, so that all agents interact with each other and none are left out, so that it is not a predictable trade and no agents or goods are left out (explained on page 20 of the paper). Then there is the deterministic mode that makes combinations in sequential order, instead of random, removing trade opportunities between agents and goods, not obeying a random exchange. Finally there is the else method, which is to support the two previous methods, more similar to the sequential method than the random one. Likewise, the method that will be used the most is the random one, since it does not leave out any trade opportunities, since the sequential method leaves trade opportunities out by placing pairs of agents in order in each iteration, therefore evaluating each good in order agent by agent until an optimal exchange opportunity is found. Furthermore, its execution takes much longer when done in order, with random inspection being much more optimal and faster, except when a solution is being reached; in that case, the sequential method is better, since it performs an exhaustive search for the solution, case by case, so as not to exceed the given tolerances. After all the possible inspection methods, a negotiation parameter is placed, equivalent to pi, which appears in section 3.2 of the paper, which is an intermediate price between sellers and buyers, to reach an agreement between them. i1 is placed as selling agents, i2 as buying agents, and j as the goods traded in the market. This is where the possible combinations are evaluated with the necessary inspection method (random or sequential). It imposes the restriction that an agent cannot transact with themselves. Then, with pip and pin, or the selling and buying prices respectively, they reach an equilibrium with the delta premiums once transactions can no longer be made, activating the restrictions of delta_tol and eps_price. There is also pit, which is the equilibrium price at which agents decide to trade their goods between themselves, where l_aux, or the intermediate price pit, is activated, between two prices to reach equilibrium with one. In this way, there are three ways to reach an agreement on a price: the buyer proposes it, the seller proposes it, or both prices are averaged using the intermediate price and exchanged at that price. The pip is the minimum price at which agent i1 sells their products, while the pin is the maximum price at which agent i2 buys. Then there are the maximum quantities that both parties are willing to exchange. The xin, in the case of xshort, is the maximum quantities that the buyer is willing to buy, redundantly, while xip in xlong is the maximum quantity that the seller is willing to sell. Both, according to their preferences, and then, within an object called xij, store the minimum quantity to be exchanged by both parties. After this, it is verified that the buyer's prices are higher than the seller's prices, in addition to always ensuring that the seller has enough stock to sell and also ensuring that the trades are economically viable and that the quantities sold are not small (which is explained in part 3.4 of the paper). Then, in the allocations, trades are carried out using the restrictions imposed previously. Seller i1 receives the money using xij*pij and transfers their positions using -xij, the reverse for buyers. Finally, the threshold prices are saved in self.pag, evaluating new broker holdings and updating this value iteration after iteration.
 Continuing with the last block of code, if no possible trades are found using the trade_aux==0 function, the delta premium is decreased using lambda to find new trade possibilities, increasing the number of acceptable prices for the next iteration. The else function then stores the number of successfully executed trades using TimesChange, which, with KK, stores the iteration number up to the point where the transaction was completed. The total number of iterations is then saved in trade_aux, which can be used for convergence analysis. Next comes the if statement, which is a warning if equilibrium was not reached with the maximum number of iterations using the MAXIT-1 function. That is, if the last possible iteration was reached and no possible solution was found, an equilibrium was not found with the eps_prices precision. Finally, with the Ev statements, the allocations, prices, and deltas are saved for each iteration of the algorithm, thus preserving the algorithm's behavior, i.e., its history.
+**lines 129 to 161**
 ```python
  def Walrascheck(self,p):
         x = np.zeros_like(self.e)
@@ -229,6 +237,7 @@ Continuing with the last block of code, if no possible trades are found using th
         return ES, x
 ```
 To begin, a matrix x is defined, which searches for the optimal demand of the agents given a price vector p. This part is key, since it starts the algorithm with the best combinations to reach the maximum possible utilities, starting with the initial endowments matrix self.e. After this, a for loop is made, where the optimization problem is solved for each of the agents individually to maximize their utility. Then, an optimization model is created for each agent, using the ConcreteModel function of pyomo, to solve the previous for loops. Then, for the model, all the goods, including money, are defined, and then the Cobb-Douglas utility function is used for each of the agents (exercise 1, section 5 of the paper) and the optimal utility of each agent is calculated using def until model.alpha. After this, the initial endowments are defined, to start from an iterative basis using model.e. Then, the prices are set, since they are in equilibrium. Next, the decision variables related to the optimal allocations for each agent are found—that is, the optimal variable to be found—starting from the initial endowments and imposing a restriction that endowments must be positive or 0. Following this is the objective function, which is the Cobb-Douglas maximization of each agent. A budget restriction is immediately placed so that agents' expenses do not exceed their income and there is no contradiction, that is, agents always have more positions than they spend, subtracting their current holdings from their initial holdings and ensuring that they are less than 0, to say that agents have more income than expenses. This is done through a def bc_rule(model) up to model.bc. Lines of code are then placed to solve the nonlinear optimization problem with opt and opt.solve. The results and the agents' optimal positions are then stored with a new for loop. Finally, it is verified that there is Walrasian equilibrium, setting as a condition that if the excess demand is less than 1%, Walrasian prices p are reached (described in section 3, theorem 1)
+**lines 163 to 183**
 ```python
  def Walraseq(self):
         x = np.zeros_like(self.allocations)
@@ -254,6 +263,7 @@ To begin, a matrix x is defined, which searches for the optimal demand of the ag
 ```
 Here the Walraseq function is implemented, which is used to calculate the optimal holdings of agents when there is a surplus in demand, greater than that described above. It is an algebraic method. It begins by entering the final allocations to work, which are stored in x, p for the initial prices, B for the sum of the alphas for each agent, and E for the aggregate endowments of each good. B is to see the agents' returns to scale, that is, how much they produce based on the change in inputs, and E the aggregate supply of each good, that is, the quantity of goods they are willing to exchange for a certain price. Then, the linear Walras problem is solved by calculating the agent's total income divided by the sum of their preferences by the share of the different goods in the agent's utility divided by the price, thus algebraically calculating agent i's demand for good j (this process is algebraic, not iterative). After this, aggregate demand must equal aggregate supply to reach equilibrium with the excess supply. The sum of the xij being the demand and the capital E the sum of the supplies, by summing the initial endowments eij, equating the latter to reach equilibrium. In this part of the code is the alphaij which is the share of good j in the utility of i, eil which is the initial endowment of agent i in good l and Bi, which as mentioned before is the sum of the preferences of agent i. All these terms are entered into a matrix that is divided into two parts, the main diagonal, where the aggregate supply of good j is subtracted and part of the aggregate demand that depends on the same good j, which is the division that was exposed before, between the total income of the agent and the sum of the agent's preferences. And the other part that is outside the diagonal which are all the captures of how the endowments of good l affect the demand for good j. This vector A is multiplied by the price vector and results in vector b, which results in goods that depend solely on the provision of money, since the price is already set by being in cash, which would be the silver left over from excess supply and demand. After this, p is implemented, which is used to solve the previous matrix system and sets money as in cash. Finally, a for loop is created to calculate the equilibrium allocations, obeying what section 5 of the paper says, where agents must spend a fraction alpha of their income on goods, where ul is the total income of agent i adjusted by B[i] and xij as the optimal allocation for good j.
 [Falta documentar]
+**Lines 212 to 216**
 ```python
 def gini(x):
     diffsum = 0
@@ -559,7 +569,7 @@ Finally, two variables p_we and x_wertr are created, which represent the equilib
  
       <img width="912" alt="Image" src="https://github.com/user-attachments/assets/ee4e3b96-16eb-4874-a7a9-9769bef3864a" />
 
-      Pyomo is used to formulate and model optimization models used in the BTE.py code, specifically the verification and          calculation of Walrasian equilibria in the context of the centralized economic model that this traditional equilibrium       has. These optimization models are designed to calculate Cobb-Douglas utility maximization subject to a budget               constraint and its corresponding price equilibrium. As the paper states, Walras solves linear equation problems              derived from first-order conditions for economies with Cobb-Douglas utilities. Pyomo has an extension called ipopt           that is used to solve non-linear optimization problems such as the Walrascheck method, which maximizes Cobb-Douglas          utility by producing the sub ij allocations of the agents raised to their preferences, distributed according to each         agent and good. This utility maximization, which is the objective function, has a budget restriction consisting of the       sum of the prices of each good per agent multiplied by the difference between the sub ij allocations of the agents           minus their sub ij initial endowments, which must be equal to or less than 0 to ensure that each agent starts with a         certain amount of money and initial allocations so that they can make the trades. Ipopt helps calculate this convex          non-linear optimization problem. After this, it verifies that the excess demand is close to 0 for all goods j, which         indicates a Walrasian equilibrium. Ipopt is invoked from pyomo and is used to find local maxima and find the x sub ij        that allow maximizing utilities, allocations and wealth through the prices p of each good. The pyutilib library is           used to measure the time taken to reach equilibrium using the bilateral market exchange method in each simulation. It        also complements and is efficient with the pyomo library.
+      Pyomo is used to formulate and model optimization models used in the BTE.py code, specifically the verification and calculation of Walrasian equilibria in the context of the centralized economic model that this traditional equilibrium has. These optimization models are designed to calculate Cobb-Douglas utility maximization subject to a budget constraint and its corresponding price equilibrium. As the paper states, Walras solves linear equation problems derived from first-order conditions for economies with Cobb-Douglas utilities. Pyomo has an extension called ipopt that is used to solve non-linear optimization problems such as the Walrascheck method, which maximizes Cobb-Douglas utility by producing the sub ij allocations of the agents raised to their preferences, distributed according to each agent and good. This utility maximization, which is the objective function, has a budget restriction consisting of the sum of the prices of each good per agent multiplied by the difference between the sub ij allocations of the agents           minus their sub ij initial endowments, which must be equal to or less than 0 to ensure that each agent starts with a         certain amount of money and initial allocations so that they can make the trades. Ipopt helps calculate this convex          non-linear optimization problem. After this, it verifies that the excess demand is close to 0 for all goods j, which         indicates a Walrasian equilibrium. Ipopt is invoked from pyomo and is used to find local maxima and find the x sub ij        that allow maximizing utilities, allocations and wealth through the prices p of each good. The pyutilib library is           used to measure the time taken to reach equilibrium using the bilateral market exchange method in each simulation. It        also complements and is efficient with the pyomo library.
 
     - D.5. Verifying package installation:
 
@@ -691,8 +701,360 @@ Finally, a graph called Pbardiffs is created. It randomly selects four iteration
 
 [Imagen]
 
+### Example 2
+#### Explanation
+#### Code documentation
+Here the documentation for example 2 will be placed to know what each part of the code does with its respective commands. we started.
+BTE is the same for both example 1 and 2 so we start immediately with the Final2 documentation.
+#### Final2 documentation
+
+```python
+from BTE import *
+from copy import deepcopy
+import pandas as pd
+import gc
+
+from time import perf_counter, strftime,localtime
+import os
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import rc
+
+rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+rc('text', usetex=True)
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 
+def Ex1():
+    n = 3
+    I = 3
+    beta = np.array([[0.6,0.15,0.15],
+                        [0.01,0.85,0.04],
+                        [0.01,0.09,0.8]])
+    e = 1.0*np.array([[10,10,10],
+                        [2,8,80],
+                        [2,80,8],])
+    Econ = Economy(n,I)
+    Econ.alpha = beta
+    Econ.e = e
+    Econ.allocations = e
+    Econ.pag = Econ.evalp(Econ.allocations)
+    delta = 1e-1*np.ones_like(Econ.pag)
+    Econ.delta = delta
+    return Econ
+
+np.random.seed(10)
+```
+The following libraries are imported:
+- From BTE import: Imports the economy class and auxiliary functions from BTE.py such as bilateral trading.
+- From copy import deepcopy: To copy objects without sharing references.
+- Import pandas as pd: To export data to Excel.
+- Import gc: Garbage Collector (optimizes memory).
+- From time: Measures time and handles date formats.
+- Import os: System operations, for example, creating folders.
+- Import matplotlib: To generate graphs.
+- From mpl_toolkits: Support for 3D graphics (not used)
+Styles are configured for graphs:
+- rc(“font”...): Serves as a font for graphs, controlling typographical aspects, setting global parameters, and setting the preferred font for graph letters.
+- rc(“text”:::): Enables text rendering using LaTeX, allowing the use of mathematical commands and professional typography.
+- plt.rc(“text”..): Reinforces the previous configuration using the pyplot interface. It is redundant but ensures that LaTeX works.
+- plt.rc(“font”..): Configures the serif font family for mathematical elements such as Times New Roman.
+We begin by defining example 2 incorporated in the paper, starting with the number of initial goods, which in this case are 3 (j=0, money, and j=1 to 2, goods other than money). We then insert a 3x3 matrix of the alpha parameters, which are the agents' preferences from the Cobb-Douglas utility functions. The agents' initial endowments are then inserted into a 3x3 matrix using the function e. The Econ class is then created, where the economy of n agents and 1 goods, including money, is created. Econ.alpha assigns the agents' preferences. Econ.e assigns the agents' initial endowments. Econ.allocations allocates the agent's assets after iterating the initial allocations for the first time, and subsequent iterations as well. Econ.pag returns the result of each agent's prices after the iterations. Delta updates the delta values ​​when trades are no longer possible, decreasing their value by 90% until it is zero or negligible. Econ.delta allocates the deltas according to the current iteration. The result for the economy in question is then returned. np.random.seed is then created to generate random results between pairs of agents, ensuring they are not in order.
+
+```python
+exfig = 'pdf'
+Ec_aux = Ex1()
+p_we, x_we = Ec_aux.Walraseq()
+p_wertr, x_wertr = Ec_aux.Walraseqrtr()
+Econ = {}
+ntrials = 20
+EvPag ={}
+EvAlloc = {}
+EvDelta = {}
+TimesChange = {}
+K = np.zeros(ntrials, dtype='i')
+eq_status = np.zeros(ntrials)
+ExTimes = np.zeros(ntrials)
+EvSD = np.zeros(ntrials)
+Evpbar = np.ones((Ec_aux.n, ntrials))
+Walras_prices = np.zeros((Ec_aux.n, ntrials))
+Walras_alloc = {}
+BPT = np.zeros((ntrials,Ec_aux.n-1))
+Prices_wal = np.zeros((ntrials,Ec_aux.n))
+Wealth_bte = np.zeros((ntrials+1,Ec_aux.I))
+Utilities_bte = np.zeros((ntrials+1,Ec_aux.I))
+Wealth_wal = np.zeros((ntrials,Ec_aux.I))
+Utilities_wal = np.zeros((ntrials,Ec_aux.I))
+Prices_final = np.zeros((ntrials,Ec_aux.n-1))
+insp = {}
+l_order = {0:[0,1,2],
+     1:[0,2,1],
+     2:[1,0,2],
+     3:[1,2,0],
+     4:[2,0,1],
+     5:[2,1,0]}
+g_order = {0:[0,1], 1:[1,0]}
+
+u0 = np.ones(Ec_aux.I)
+w0 = np.ones(Ec_aux.I)
+for i in range(Ec_aux.I):
+    p0 = np.append(1.0, Ec_aux.pag[i,:] )
+    print(p0)
+    w0[i] = np.dot(p0,Ec_aux.e[i,:])
+    u0[i] = np.prod(Ec_aux.allocations[i,:]**Ec_aux.alpha[i,:])
+```
+exfig for formatting figures. A trial economy is created using Ec_aux. This trial economy is used to calculate the theoretical Walrasian equilibrium by entering p_we and x_we. It is also necessary to save each economy for each trial, so the variable Econ is created. Next, it is necessary to know the number of simulations or trials by entering ntrials (which in this case will be 20). It is also necessary to save the allocations, prices, and deltas for each simulation, so the following variables are created: EvPag, EvAlloc, and EvDelta. The number of trades for each iteration is then saved in the variable TimesChange. Next, a variable K is created that records the total iteration time for each simulation. An equilibrium condition is then created with q_status, where 1 indicates whether the good converges to equilibrium and 0 indicates whether it does not. As discussed above, each good, including money, is equivalent to 1. The execution times must then be calculated, measured using the variable ExTimes. The maximum standard deviation for prices is then set using EvS. Equilibrium prices must also be evaluated through simulation, which is done using Evpbar. Finally, the agents' Walrasian prices and current Walrasian price allocations are evaluated using Walras_prices and Walras_alloc. The equilibrium price information for all goods except money is then stored using the BPT function, generating a 9x10 matrix where the rows represent the simulations and the columns the quantity of non-monetary goods per agent. These boxplots show the dispersion of threshold prices. Wealth_bte calculates agent wealth for each agent i in simulation k to generate a comparison with the Walras method. Utilities_bte is used to calculate the utility of the Cobb-Douglas functions for each agent and compare it with the utilities of the Walras equilibrium. Wealth_wal is used to measure the wealth generated by the Walras equilibrium using Walraseqrtr() prices. Finally, Utilities_wal calculates utility for the Walras equilibrium with its respective allocations. Next, a variable prices_final is created, which initializes the matrix containing the final equilibrium prices with the number of iterations and Ec_aux. An empty dictionary is then created to store the inspection orders for each simulation using insp=. Permutations of fixed inspection orders between goods and agents are then created, creating inspection vectors for each agent, where the first order inspects from agent 0 to agent 2, creating different inspections that will lead to different evaluation results. Then with a g_order= the normal and reverse order of the goods is made. After this, the initial matrices are created with np.ones of the initial wealth and utilities, excuse the redundancy given by the variables w0 and u0 respectively, each one with a size of 3 agents. Then a for loop is created that iterates over the 3 agents of the economy Ec_aux created initially as well as the matrices created previously precisely to calculate the initial utilities and wealth of the agents. After this, the variable p0 is created which is the price vector of each of the agents that with np.append it is possible to modify the initial matrix of the agents, creating a single vector with the initial prices of each of the agents, where the first good in the matrix will always be 1, since it is money and is normalized by norm and with Ex_aux.pag[i, :] what remains of the vector is completed with the personal prices of agent i. Then with a print(p0) the personal prices of agent i are printed. Then the variable w0[i] is created where the initial wealth of the agents is calculated using the dot product with p0 being the initial prices of the agents and their initial endowments, with Ec_aux.e[i, :] being the initial endowments of agent i, calculating the dot product between these two matrices using np.dot. Then the variable u0[i] is created which is to calculate the value of the initial utility of the agents, using np.prod which calculates the product of all the elements of a matrix, in this case Ec_aux.allocations[i, :] which are the initial endowments of agent i and Ec_aux.alpha[i,:] are the preferences of the agents, raising allocations in alpha to calculate the utility using the Cobb Douglas equation.
+
+```python
+for ku in range(ntrials):
+    if ku < 12:
+        for io in range(6):
+            for go in range(2):
+                insp[2*io+go] = ['fixed',l_order[io], g_order[go]]
+    else:
+        insp[ku] = ['ran',{},{}]
+print(insp)
+
+for k in range(ntrials):
+    print('Trial number {}'.format(k))
+    Econ[k] = Ex1()
+    Walras_prices[:,k], Walras_alloc[k] = Econ[k].Walraseqrtr()
+    t = time.time()
+#    insp[k] = ['ran',{},{}]
+    print(insp[k])
+    EvPag[k], EvAlloc[k], EvDelta[k], TimesChange[k], K[k], eq_status[k] = Econ[k].Bilateral(eps_prices = 1e-6, MAXIT = 250000, lbda = 0.975, delta_tol = 1e-18, inspection=insp[k])
+    ExTimes[k] = time.time()-t
+    print('Total time {}[s]'.format(ExTimes[k]))
+    Evpbar[1:,k] = np.max(Econ[k].pag,axis=0)
+    EvSD[k] = np.max(np.std(Econ[k].pag,axis=0))
+    print('Max_i Std of p_ij of {}'.format(EvSD[k]))
+
+    for i in range(Econ[k].I):
+        Z = np.zeros((Econ[k].I,K[k]))
+        for kk in range(K[k]):
+            for ii in range(Econ[k].I):
+                Z[ii,kk] = EvAlloc[k][kk][ii,0]
+                for nn in range(Econ[k].n-1):
+                    Z[ii,kk] += (EvAlloc[k][kk][ii,nn+1])*(EvPag[k][kk][ii,nn])
+    BPT[k,:] = np.max(Econ[k].pag,axis=0)
+    for i in range(Econ[k].I):
+        Wealth_bte[k,i] = np.sum(Evpbar[:,k]*Econ[k].allocations[i,:])
+        Utilities_bte[k,i] = np.prod(Econ[k].allocations[i,:]**Econ[k].alpha[i,:])
+        Wealth_wal[k,i] = np.sum(Walras_prices[:,k]*Walras_alloc[k][i,:])
+        Utilities_wal[k,i] = np.prod(Walras_alloc[k][i,:]**Econ[k].alpha[i,:])
+#    plt.figure()
+#    Z = np.zeros((Econ[k].I,K[k]))
+#    for ii in range(Econ[k].I):
+#        for kk in range(K[k]):
+#            Z[ii,kk] = np.prod(EvAlloc[k][kk][ii,:]**Econ[k].alpha[ii,:])
+#        plt.plot(Z[ii,:],label='Agent {}'.format(ii+1))
+#    #    plt.title(r'Utilities evolution for each agent $\{\Pi_{j=0}^n x_{ij}^{\nu,\alpha_i}\}$')
+#    plt.xlabel(r'Iteration $\nu$')
+#    plt.ylabel(r'$u(x_{i\cdot}^{\nu})$')
+#    plt.legend(loc='upper left')
+#    plt.savefig('Ut_trial'+str(k)+'.'+exfig)
+#    plt.close()
+    gc.collect()
+
+Wealth_bte[-1,:] = Wealth_wal[0,:]
+Utilities_bte[-1,:] = Utilities_wal[0,:]
+
+print('Number of eqs {} out of {}'.format(np.sum(eq_status),ntrials))
+print("Median of K {}".format(np.median(K)))
+print("Median of Time {}".format(np.median(ExTimes)))
+#print("Median of trade operations {}".format(np.median(TimesChange)))
+
+soc_ut_bte = np.sum(Utilities_bte[:-1,:],axis=1)
+soc_ut_wal = np.sum(Utilities_wal,axis=1)
+wealth_bte = np.sum(Wealth_bte,axis=1)
+
+plt.figure()
+plt.plot(soc_ut_bte, label='BTE')
+plt.plot(soc_ut_wal, label='Wal')
+plt.title(r'Social utility $\displaystyle \sum_{i\in I} u_i(x_i)$')
+plt.xlabel(r'Trials $\nu$')
+plt.ylabel(r'$U$')
+plt.savefig('SocUt.'+exfig)
+plt.close()
+
+plt.figure()
+labels = range(ntrials+1)
+for i in range(Ec_aux.I):
+    plt.bar(labels, Wealth_bte[:,i], bottom=np.sum(Wealth_bte[:,:i],axis=1))
+plt.title(r'Wealth ${\bar p}\cdot x_i^{\nu}$')
+plt.axvline(x = ntrials-0.25, linestyle = '-.')
+plt.savefig('Wealth_bte.'+exfig)
+plt.close()
+
+plt.figure()
+labels = range(ntrials+1)
+for i in range(Ec_aux.I):
+    plt.bar(labels, Utilities_bte[:,i], bottom=np.sum(Utilities_bte[:,:i],axis=1))
+plt.title(r'Utility $ u_i(x_i^{\nu})$')
+plt.axvline(x = ntrials-0.25, linestyle = '-.')
+plt.savefig('Utilities_bte.'+exfig)
+plt.close()
+```
+Then a for loop is created that iterates over each simulation of the 20 defined above, that is, in range(ntrials)(ku is a variable that is created to iterate through each simulation). Then an if is created that if it goes through the first 12 simulations it configures a fixed inspection order combined with 6 possible orders of agents and 2 possible orders of goods as proposed previously. Then two for loops are created, the first for the fixed order of the agents, which goes through each of them (the 6) (creating the index io) and the second for the fixed order of goods (the 2) (creating the index go) then storing all these values ​​that go through the for loops mentioned above in insp[2*io+go]. This last variable saves the fixed combinations of agents and goods, maintaining a fixed order. Then an else is created for simulations 12 to 19 that establishes a random order with the variable insp[ku]. The "ran" object establishes the random order, with empty spaces used as spaceholders or storage for new data. A printout of the complete inspection configuration is then placed. A for loop then iterates over all the simulations being run, allowing the consistency of the comparison results to be studied. A printout is then placed to determine which part of the simulation evaluation is in order to track the process. The Eco variable then creates an independent copy of the initial economy for each test, which is crucial as it allows each agent to start from the same initial state based on their holdings, and the negotiation processes alter the states of the economy. Walras_prices and Walras_alloc are also created, where the former stores the equilibrium prices at iteration k and the latter stores the equilibrium allocations for all agents, respectively. This will serve as a comparison with the other method. Next, a variable t is created, which measures the current time it takes to execute the bilateral algorithm, which will be measured later. The following lines of code then execute the bilateral algorithm with the following variables:
+- eps_prices=1e-4: Threshold for considering prices to have converged (when the standard deviation of prices between agents is less than this value)
+- MAXIT=250000: Maximum number of iterations allowed
+- lbda=0.998: Price premium reduction factor deltaij
+- Delta_tol=1e-18: Minimum value allowed for deltaij
+- inspection=insp[k]: Strategy for selecting pairs of agents and goods with the orders established above.
+The returned results are:
+- EvPag[k]: Price history during the iterative process
+- EvAlloc[k]: Allocation history during the iterative process
+- EvDelta[k]: History of deltaij premiums during the iterative process
+- TimesChange[k]: Number of times transactions were made
+- K[k]: Total number of iterations performed
+- eq_status[k]: Indicator of whether equilibrium was reached (1) or not (0)
+Then, the ExTimes[k] function calculates the time it took to execute the bilateral algorithm for the current test, and then prints the execution time. After this, the final equilibrium prices for the current test are stored as follows:
+- Econ[k].pag: Stores the threshold prices for all agents (i.e., the limit when revenues equal costs)
+- np.max: Takes the maximum for each good
+- Evpbar: Stores all goods starting from position 1.
+Then, the maximum standard deviation of prices between agents is calculated for any good:
+    - np.std: Calculates the standard deviation per good
+    - np.max: Takes the maximum of these deviations
+    - Measures how close agents are to agreeing on prices (convergence)
+Then, a for loop is created that iterates over each agent i in economy k with Econ[k].I. Then a matrix z of size number of agents x the number of iterations k is initialized, first creating the variable Z and initializing the matrix with np. zeros and Econ [k]. I and K [k], where there are I agents x K [k] iterations. Then another for loop is created within the previous one, but iterating over each iteration kk of simulation k, which is why the index kk is created. Within this loop, another for loop is created that iterates over each agent ii, creating this index ii, which iterates over each of the agents of economy K. Then a variable Z [ii, kk] is created where the value of money (good 0) is assigned for agent ii in iteration kk, therefore placing EvAlloc of economy k iterated over kk and ii, being 0. This implies the direct monetary component as mentioned above. Then another for loop is created within the previous ones, creating the index nn to iterate over the non-monetary goods by iterating over the economy of K with Econ[k] up to the value n-1. After this, the product quantity of the good x the agent's personalized price is added to the monetary possessions that the agent had at the beginning. For this, a variable Z[ii, kk] is created again that multiplies the agents' allocations by the price of these goods to measure their wealth and add it to the money they initially have in their positions. This is done with EvAlloc[k][kk][ii, nn+1], which is the quantity of good nn+1 of agent ii in iteration kk and with EvPag[k][kk][ii, nn] which is the personalized price (threshold) of agent ii for good nn. After this, agent i has the total value of their basket in a certain iteration kk. Then the variable BPT[k, :] is created, which assigns the maximum equilibrium prices for each good in simulation k, calculating the maximum per column for each good with the np.max function with the matrix Econ[k].pag which are the threshold prices of all agents in simulation k. All this results in a vector of the maximum threshold prices of the agents per good in simulation k. All this results in a final equilibrium of maximum price thresholds for each good in the simulations, especially when there are no more mutually beneficial exchange opportunities. Then a for loop is created that runs through the entire economy Econ[k] with all agents I, which creates an index i that places the current agent being iterated. After this for loop contains Wealth_bte which calculates wealth as the dot product between equilibrium prices and final allocations, where Evpbar[:,k] is a vector of equilibrium prices for all goods in simulation k and Econ[k].allocations[i,:] which is the vector of final allocations of agent i. This is related to part 3.6 of the paper which implements the same as above. Then the function Utilities_bte is created which calculates the utility of each agent with a Cobb-Douglas function of the allocations, where Econ[k].alpha[i,:] are the preference parameters of agent i (exponent of the Cobb-Douglas function). ** is used to raise powers and finally np.prod for the product of all the elements. This part implements the Cobb-Douglas function implemented in section 5, equation 5.2. Then the Walrasian equilibrium is calculated. The variable Wealth_wal is created, which is similar to the bilateral calculation but with Walrasian prices and allocations. Then the same utility function is created but applied to Walrasian allocations with Utilities_wal. Then, memory is freed with gc.collect. Then Walrasian reference values ​​are assigned for comparison. For this, the variable Wealth_bte[-1, :] is created, which assigns the Walrasian wealth as the last point of the BTE series, equating Wealth_bte to Wealth_wal[0, :] where Wealth_bte[-1, :] is the last row of the BTE wealth matrix and Wealth_wal[0, :] is the first row of the Walras matrix, which makes it take the Walrasian wealth values ​​as the final reference for the bilateral exchange. Then, the same procedure as before is done, only with the utilities. This allows a direct comparison of the results of the bilateral process with the Walrasian equilibrium. Then, the statistical results and key visualizations that validate the paper's findings are evaluated. First, a print is generated reporting how many tests reached equilibrium (eq_status=1) vs. those that did not, showing a percentage of those that converged. Then, the number of iterations for each simulation called K is printed, thus also calculating the median, which is the central value. Then there is another print to print the amount of execution time that each iteration took per test. Then the aggregate metrics are calculated. First, the variable soc_ut_bte is created, which sums the BTE utilities for each simulation (excluding the last Walras point). This is done using np.sum with Utilities_bte[:-1,:] -1 to not consider the last Walrasian row. Then the Walrasian utility is summed with the variable soc_ut_wal, which only sums one point per column, that is, the last row, which is the one that contains the Walrasian utilities. All this is done again with np.sum and Utilities_wal in parentheses. Then the total BTE wealth per trial is summed with the variable wealth_bte and np.sum again. Then, a figure is created with plt.figure to visualize the evolution of social utility. With plt.plot a time series of the social utility of BTE is created by placing the BTE label, to differentiate with Walras using the label function. Then the same is done, but with the Walrasian social utility. Then with plt.title a title is created for the graph, which in this case is the Social utility, both Walrasian and BTE, in LaTeX format. Then the axis titles are placed with plt.xlabel and plt.ylabel, which are respectively the simulation number and the aggregate utility, all in LaTeX format. Then with plt.savefig the figure is saved with a predefined format with exfig, that is, in PDF format, with the title of SocUt. Then with plt.close, the graph is closed. Another figure is initialized later with plt.figure where the variable labels are generated for the X axis, including the Walras point, putting the number of simulations, that is why range (ntrials + 1), the range generates the sequence of simulation numbers. Then a for loop is created for each agent putting the index i as the agent that is currently iterating the auxiliary economy (Ec_aux.I). Then a stacked bar chart is created using plt.bar, including the variable labels exposed previously which are the different simulations. With Wealth_bte[:,i] being the height of the bars, being the wealth of agent i in each of the trials. The variable bottom positions the bar above the sum of previous agents, thus creating the stacked effect. Then with np.sum, the accumulated wealth of each of the agents is added with Wealth[:,:1] which is column i of the Wealth matrix, which is the wealth of the agents in all simulations. The purpose of this graph is to be able to visualize the evolution of the agents' wealth. After this, a title is placed on the graph with plt.title in latex format with the title of Wealth. A vertical reference line is then added to the graph with plt.axvline, where the variable x sets the position on the x-axis of the simulations, setting the final simulation at -0.25 for visual centering. The line style is then set with linestyle, which in this case is dashes and dots "-." The color is set to black with the color function, which is already black by default. The implicit line thickness is set with linewidth=1.5, setting the line thickness to 1.5. Finally, the graph is saved with plt.savefig with the file name "Wealth_bte" and in PDF format using exfig. The figure is then closed with plt.close() to free up space.
+```python
+
+plt.figure()
+plt.scatter(Evpbar[1,:],Evpbar[2,:])
+plt.scatter(p_wertr[1],p_wertr[2], color='red')
+plt.title(r'Final BTE equilibrium price thresholds $\bar{p}_{\cdot j}$')
+plt.xlabel(r'Goods $j$')
+plt.ylabel(r'$p$')
+plt.savefig('Pbar.'+exfig)
+plt.close()
+
+plt.figure()
+plt.boxplot(BPT, showfliers=False)
+plt.title(r'Boxplot for equilibrium price thresholds $\bar{p}_{\cdot j}$')
+plt.xlabel(r'Goods $j$')
+plt.ylabel(r'$p$')
+plt.savefig('Pag.'+exfig)
+plt.close()
+
+#'''
+for k in range(ntrials):
+    lnst = ['solid', 'dotted', 'dashed']*ntrials
+    cols = [(130/235,36/235,51/235),(0,50/235,90/235),(130/235,120/235,111/235),(0/235,173/235,208/235),(17/235,28/235,36/235),(220/235,220/235,220/235),(0,128/235,128/235)]
+    delta = 0.0025
+    s = np.sum(Ec_aux.e,axis=0) # Total suppy
+    fig, ax = plt.subplots()
+    for k in range(ntrials):
+        XX = np.zeros(K[k])
+        YY = np.zeros(K[k])
+        for kk in range(K[k]):
+            XX[kk] = EvAlloc[k][kk][0,1]
+            YY[kk] = EvAlloc[k][kk][0,2]
+        plt.plot(XX, YY, label=("Example {}".format(k+1)),linewidth=1.5,linestyle=lnst[k])
+        plt.annotate(r'$x^{0}$',xy=(XX[0],YY[0]))
+        plt.annotate(r'$\bar{x}$',xy=(XX[-1],YY[-1]-0.2))
+    plt.xlabel('Good 1')
+    plt.ylabel('Good 2')
+    ax.set_title('Edgeworth box')
+    ax.set_xlim(0.0, s[1])
+    ax.set_ylim(0.0, s[2])
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, frameon=False)
+    plt.savefig(str(k)+'Edgebox12.'+exfig)
+    plt.close()
+#'''
+
+plt.figure()
+pmean = Evpbar.mean(axis=1)
+diff = np.zeros((ntrials,ntrials))
+for i in range(ntrials):
+    for j in range(i):
+        diff[i,j] = np.max(np.abs(Evpbar[:,i]- Evpbar[:,j]))
+i0,i1 = np.unravel_index(np.argmax(diff), diff.shape)
+plt.plot(Evpbar[:,i0],label='Trial {}'.format(i0))
+plt.plot(Evpbar[:,i1],label='Trial {}'.format(i1))
+print(diff)
+diff[i0,:] *= 0.0
+diff[:,i0] *= 0.0
+diff[i1,:] *= 0.0
+diff[:,i1] *= 0.0
+print(diff)
+i2,i3 = np.unravel_index(np.argmax(diff), diff.shape)
+plt.plot(Evpbar[:,i2],label='Trial {}'.format(i2))
+plt.plot(Evpbar[:,i3],label='Trial {}'.format(i3))
+plt.legend(loc='lower right')
+plt.savefig('Pbardiffs.'+exfig)
+plt.close()
+```
+In the following 10 lines of code, the same procedure is followed, only with the utilities of each agent. Then, a new figure is created with plt.figure. Then, with plt.scatter, a scatter plot is created with X and Y coordinates, respectively, with the threshold prices of goods 1 and 2, by placing Evpbar[1,:] and Evpbar[2,:]. This scatter plot is made to see the dispersion that exists between the bilateral prices for all simulations. Then, the same is done for the Walrasian prices to make the comparison with the threshold prices of the bilateral equilibrium. Then, with plt.title, the title “Final BTE equilibrium price thresholds…” is created for this scatter plot with LaTeX notation. Then, the names of the X and Y axes are placed with plt.xlabel and plt.ylabel, where each one is called “Goods” and “Prices” respectively, which correspond to goods 1 and 2 respectively, excuse the redundancy. Then the figure is saved with plt.savefig with the name of the PDF file Pbar. Then the graph is closed with plt.close to free memory. Then a new figure is created with plt.figure to then create a boxplot with plt.boxplot containing the maximum price matrix using BPT where its rows represent the simulations and its columns the goods. This boxplot creates a boxplot per good to see how the equilibrium prices evolve for each simulation, showing the robustness of bilateral equilibrium vs. the Walrasian. Then the title is given using plt.title and the name of the boxplot axes using plt.xlabel and plt.ylabel. In this case the X and Y axes are Good index and price threshold respectively, each one representing the goods index and the price scale respectively, excuse the redundancy. Then the figure is saved with plt.savefig with the name of the PDF file Pag. Then the graph is closed to avoid losing memory with plt.close. Next, the variables i0 and i1 are created, which are the pairs with the greatest price differences in simulations i and j for the goods. Diff is the aforementioned square matrix of the simulations performed by the different methods. np.argmax(diff) then finds the maximum value of the price differences between the agents' goods across the different simulations as a flat index. To prevent this from happening, np.unravel_index() is used, which converts the flat index into the exact coordinate of the element in question. Diff.shape provides the matrix indices for the conversion. Another figure is created with plt.figure to compare simulations with significant differences in their equilibria. Then a variable pmean is created to make a vector of 3 elements that are all the goods and make an average between the prices of each of these goods in each simulation, where good j are the rows and simulation k are the columns, all this contained in Evpbar leaving a 3x20 matrix with the quantity of goods (including money) and the number of simulations which are 20. This is done to normalize the prices of the different simulations and see what they are converging towards. Then a variable diff is created which is a matrix to compare the difference between the equilibria of each of the models (BTE and Walras). The square matrix is ​​created with np.zeros, where the rows and columns will be the number of simulations that have been carried out using the algorithms, being lower triangular to avoid redundant calculations. After this, two for loops are created, one that goes through all the components of the matrix, that is, through all the simulations and then another for cycle that compares only with the previous simulations to avoid redundancy, which are i and j respectively. After these two loops, the variable diff[i,j] is placed to see the difference in prices between the simulations of each of the algorithms and to see any large discrepancies that may exist. All this is done with np.abs which takes the absolute difference for each simulation of the different algorithms between Evpbar[:, i] and Evpbar[:, j]. Then with np.max it takes the maximum difference between these values ​​and places them in the lower triangular matrix, thus capturing the worst result between the differences between the algorithms. Then the variables i0, i1 are created, which are the pairs where there was a greater price difference in simulations i and j of the goods, where diff is the aforementioned square matrix of the simulations of the different methods. Then np.argmax(diff) finds the maximum value of the price differences of the agents' goods in the different simulations as a flat index. To prevent this from happening, np.unravel_index() is used, which converts the flat index into the exact coordinate where the element in question is located. Diff.shape provides the matrix indices to then perform the conversion. It then results in i0, i1 being the coordinates (row, column) with the greatest difference. Then the graph of a specific simulation is created, in this case the equilibrium prices of the first simulation of each good are placed, forming a vector of size n, corresponding to the total quantity of goods mentioned above (all this is done with Evpbar[:, i0]). Then, with plt.plot, a line is created with the prices per good where the X axis corresponds to the index of the good, and the Y axis to the equilibrium price for that specific good. Then, with label, a legend is created with a label of the simulation in which it is located, in this case the i0. Then, in the next line of code, the same procedure is followed, only with the second simulation and its equilibrium prices, to select the other simulation with the greatest difference, graphing the same axis. Then, a print (diff) is made where the lower triangular matrix that shows the greatest difference between simulations of the different algorithms is displayed, being useful for visualizing the greatest differences. Then, in the following four lines of code, already processed data is eliminated to find new possible combinations. Then, in the following 3 lines of code, the second most divergent pair is graphed, creating the variables i2, i3, which are the pairs where there was a greater price difference in simulations i and j of the goods, where diff is the aforementioned square matrix of the simulations of the different methods. np.argmax(diff) then finds the maximum value of the price differences between the agents' goods across simulations as a flat index. To prevent this from happening, np.unravel_index() is used, which converts the flat index into the exact coordinate of the element in question. Diff.shape provides the matrix indices to then perform the conversion. Then it results that i2,i3 are the coordinates (row,column) with the greatest difference. Then the graph of a specific simulation is created, in this case the equilibrium prices of the first simulation of each good are placed forming a vector of size n, corresponding to the total quantity of goods mentioned above (all this is done with Evpbar[:, i2]). Then with plt.plot a line is created with the prices per good where the X axis corresponds to the index of the good, and the Y axis to the equilibrium price for that specific good. After this, add a legend with plt.legend, placing it in the lower right corner with loc="lower right." Then, save the graph using plt.savefig with four different price curves to show how far they are from equilibrium. A legend identifies each simulation, generating a PDF file called Pbardiffs.pdf with the exfig function. Then, close the graph with plt.close to save memory.
+```python
+print(i0,i1,i2,i3)
+print('j&{}&{}&{}&{}&Wal'.format(i0,i1,i2,i3))
+for n in range(Ec_aux.n):
+    print('{}&{}&{}&{}&{}&{}'.format(n,Evpbar[n,i0],Evpbar[n,i1],Evpbar[n,i2],Evpbar[n,i3],p_we[n]))
+
+writer = pd.ExcelWriter('Output.xlsx')  #Key 2, create an excel sheet named hhh
+for k in range(ntrials):
+    XX = np.zeros((K[k],11))
+    for j in range(K[k]):
+        a = np.array([j,EvPag[k][j][0,0],EvPag[k][j][0,1],EvPag[k][j][1,0],EvPag[k][j][1,1],EvAlloc[k][j][0,0],EvAlloc[k][j][0,1],EvAlloc[k][j][0,2],EvAlloc[k][j][1,0],EvAlloc[k][j][1,1],EvAlloc[k][j][1,2]])
+        XX[j,:] = a
+    strpg = 'page_{}'.format(k)
+    data_df = pd.DataFrame(XX)
+    data_df.to_excel(writer,strpg,float_format='%.8f')  #Key 3, float_format controls the accuracy, write data_df to the first page of the hhh form. If there are multiple files, you can write in page_2
+data_fd = pd.DataFrame(Walras_alloc[0])
+data_fd.to_excel(writer,'Walras_alloc',float_format='%.8f')
+data_fd = pd.DataFrame(Evpbar)
+data_fd.to_excel(writer,'Evpbar',float_format='%.8f')
+writer.save()
+
+
+plt.figure()
+x = np.linspace(np.amin([Utilities_wal,Utilities_bte[:-1,:]]),np.amax([Utilities_wal,Utilities_bte[:-1,:]]),100)
+for k in range(ntrials):
+    plt.scatter(Utilities_wal[k,:],Utilities_bte[k,:],label='Trial {}'.format(k))
+plt.plot(x,x,linestyle='--')
+plt.ylabel('BTE Utility')
+plt.xlabel('Walras Utility')
+plt.legend(loc='lower right')
+plt.savefig('Utilities.'+exfig)
+plt.close()
+```
+Then with a print, the indexes i0, i1, i2 and i3 are printed showing the number of the trials selected for the analysis. Then a print is placed to begin the preparation of the table for the comparisons of the deviations of each of the simulations, where the first line is printed j&{}&{}&{}&{}&Wal(& in latex format separates the columns) which is the format of the table of the columns j which in this case are the goods and the Walrasian column and to print the corresponding numbers of the chosen simulations you put format(i0, i1, i2, i3). Then a for loop is created that iterates over all the goods from 0 to n-1 which are all contained in Ec_aux.n that is why it is put within the in range, to iterate over all the goods. Then, we proceed again with a latex-type table like the one mentioned above, only with all the goods that are in each iteration chosen for the analysis with Evpbar, which is the matrix of the equilibrium prices and the number of simulations. For each good n, a row is printed in the latex format described above. The field for each row is n, that is, each good for each simulation that was chosen that is within the columns, and then at the end, the Walrasian price is entered to see how far it is from the theoretical equilibrium. Then, a variable writer is created that creates an Excel file to save multiple sheets with pd.ExcelWriter, calling the file Output.xlsx. Then, a for loop is created that creates an index k that indicates the current simulation that is iterating out of the 20 simulations (hence range(ntrials)). Then a variable XX is created inside the loop, which initializes an array to store K[k] (rows representing the iterations of simulation k) and 11 columns (including data and metadata), all this with np. zeros, to initialize the array. Then another for loop is created (contained in the previous for loop) with index j, which indicates the current iteration of simulation k (that is why range(K[k]) is placed). Then contained in the for loop, the variable a is created to create an array with np.array, which represents the data packet per iteration (created previously). Placing the prices first and then the assignments of each agent, with an order preset previously, creating a 10x10 matrix, the 10 rows being the orders preset previously and the 10 columns the number of simulations for each order. Then a variable XX[j, :] is created to store the previously created matrix, storing in row j all the values ​​of the vector a of the matrix, which is a 1x10 row. Then all this is exported to excel. First, strpg is placed, which is the name of the sheet, placing format(k) to place a simulation per sheet, in this case there would be 20 sheets. Then the variable data_df is placed to create a table in excel with pd.Dataframe(XX), placing a matrix in each excel sheet. Then the data_df.to_excel command is placed that writes a writer object in excel, the name of the sheet with strpg and with an 8 decimal format using float_format. Then with data_fd a Walras assignment table is created, placing pd.DataFrame(Walras_alloc[0]). Then with data_fd.to_excel separate sheets are created for each of the agents, also containing a writer, the name of the sheet, which in this case is placed directly, is not within a variable (Walras_alloc) and 8 decimal places are placed with float_format. Then the same procedure is carried out but with the threshold prices of each agent per well. Then with writer.save() the excel file is saved and closed. Then, using a variable x, 100 equidistant points are created from each other with the np.linespace function, and then with np.amin the minimum of the utilities of all the agents in both BTE and Walras is found, the same with np.amax, but the maximum of the utilities of all the agents (in this case it is different from example 1 in both amax and amin because it is done using the assignment and price tests already done). This is done to measure the technical efficiency of BTE and Walras, where BTE is the X axis, which represents bilateral exchanges, and Walras is the Y axis, which is the optimal axis, generating a line x = y. It is used to see how far away or close to the theory are the bilateral exchanges vs the Walras, which are the optimal and theoretical ones respectively. Then, using a for loop, iterates and makes a scatter graph to see how the utilities of the bilateral exchange (BTE) vary vs the Walras utilities in a certain iteration K using plt.scatter where Utilities_BTE[k, :] is the utility vector of all agents in the simulation k of bilateral exchanges and utilities_wal[k, :] are the utilities corresponding to the Walrasian equilibrium, where each point in this regression represents an agent in a specific simulation. Plt.plot(x, x, …) graphs the line x=y with a dashed style (==) by setting np.linestyle to make this happen. What we are looking for with this is to see how efficient in terms of utility the bilateral market equilibrium is vs. the Walrasian equilibrium, which is the ideal. When the points on the bilateral equilibrium line move far away from the Walrasian equilibrium in terms of utility, it depends. If the utility line of the bilateral market equilibrium is above the Walrasian line, there is a surplus, therefore the agent has greater well-being. On the contrary, if it is below the Walrasian utility line, this surplus does not exist, therefore there is a loss of well-being. The x-axis is set with plt.xlabel to show the utilities of the decentralized mechanism, that is, bilateral exchanges, and on the other hand, on the y-axis, with plt.ylabel, the utility of the Walrasian equilibrium is set, that is, the artificial centralized equilibrium introduced in the paper. Then, in plt.legend, the legend is placed so that the k simulations can be tracked throughout the iterations due to the random nature of the negotiations. Each legend groups a set of points by the number of simulations there were, which in this case are 10, condensed into a single graph. Then, with plt.savefig, the figure is saved and shows the evolution according to the simulations of each of the agents of the relationship between the Walrasian equilibrium and the bilateral equilibrium to see the efficiency of the latter, as shown in the last figure of the paper on page 26.
+```python
+print(p_wertr)
+#verificar el random de los agentes check
+#Revisar tabla de dotaciones de equilibrio (por el orden randomizado)
+
+
+#Tab4
+idx = [0, 4, 10, 13, 14]
+idags = np.asarray(['$j=1$','$j=2$'])
+#labls = ['$\overline p^{}$'.format(i0),'$\overline p^{}$'.format(i1), '$\overline p^{}$'.format(i2), '$\overline p^{}$'.format(i3), '$\overline p^{W}$']
+labls = ['$\overline p^{1}$', '$\overline p^{2}$', '$\overline p^{3}$', '$\overline p^{4}$', '$\overline p^{5}$', '$\overline p^{W}$']
+T4 = np.column_stack([Evpbar[1:,idx],p_we[1:]])
+df = pd.DataFrame(T4,columns=labls, index=idags)
+df.to_latex('Tab4_results.tex', float_format="{:0.4f}".format, escape=False)
+
+
+Tab5 = np.zeros((6,Ec_aux.n*Ec_aux.I))
+for nn in range(Ec_aux.n):
+    for ii in range(Ec_aux.I):
+        for jj in range(5):
+            Tab5[jj,3*nn+ii] = Econ[idx[jj]].allocations[ii,nn]
+        Tab5[5,3*nn+ii] = x_we[ii,nn]
+
+idags5 = np.asarray(['$\nu=1$','$\nu=2$','$\nu=3$','$\nu=4$','$\nu=5$','Wal'])
+labls5 = ['$\overline x^{\nu}_{10}$','$\overline x^{\nu}_{20}$','$\overline x^{\nu}_{30}$','$\overline x^{\nu}_{11}$','$\overline x^{\nu}_{21}$','$\overline x^{\nu}_{31}$','$\overline x^{\nu}_{12}$','$\overline x^{\nu}_{22}$','$\overline x^{\nu}_{32}$']
+df5 = pd.DataFrame(Tab5,columns=labls5, index=idags5)
+df5.to_latex('Tab5_results.tex', float_format="{:0.2f}".format, escape=False)
+```
+Finally, a print command is used to print the Walras prices to the console in matrix format with the equilibrium prices using the p_wertr variable. Table 4 (price results) is then prepared. The simulations to be displayed are then selected using the idx variable, which in this case will be 0, 4, 10, 13, and 14. The idags variable is then created, which labels the rows containing the goods, using the np.asarray command, which converts data into matrices. In this case, the rows are formatted with Latex $j=1$ and $j=2$. The column headers are then created using the labls variable in Latex format, including the prices of the previously selected trials and comparing them with the Walras prices. Then the variable T4 is created by creating a combined matrix generating a single column with np.column_stack with the threshold prices of goods 1 and 2 in the selected simulations, comparing it with the Walras prices of goods 1 and 2. Then a variable df is created that creates another table but exported through pd.dataframe with the data from T4, which is why it appears at the beginning of the parentheses of the command. Then the names of the columns and rows are placed, respectively with labls and idags. Then it is exported to LaTeX with df.to_latex, placing the file name in tex format. Indicating the number of decimals with float_format, in this case 4. With escape=false it allows LaTeX commands. Then, table 5 is prepared with the variable creating a 6x9 matrix (6x(3x3) for the 3 goods and 3 agents from the beginning). Initializing the matrix with np.zeros, where Ec_aux.n are the goods and Ec_aux.I the agents. Then two for loops are created, where in the first an index nn is created which is the current good in which this loop is iterating, contained within this there is another for loop with the index ii which is the index of the current iterated agent and finally another for loop is created contained within the previous 2 loops which with index jj is the current iteration of the selected simulations, which in this case are 5 in question. Then a variable is created within these for loops called Tab5[jj,3*nn+ii] which are the BTE assignments according to the iteration, the good and the agent in which the for loop is located. Then the same way is carried out with Walras, only outside the loop of the chosen simulations. Then, using the variables idags5 and labls5, the final details are completed, respectively, with the labels for the rows containing the selected simulations plus Walras and the column headers, where the values ​​are for each participating agent. Finally, the final details of the latex tables are completed, such as the number of decimal places each result should have.
+#### Installing libraries and configurations to run the code
+Once the packages have been installed and the Python environment has been created, you're ready to run the code. Only one more library needs to be installed at the Anaconda prompt. First, install openpyxl by typing "conda install openpyxl" at the prompt. Then, replace writer.save() with writer.close() in the code, updating the openpyxl package. This command is located on line 295 of the code; if not, search for it with Ctrl+F.
+
+#### Outputs
 
 
 
