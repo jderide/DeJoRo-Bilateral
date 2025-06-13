@@ -1804,6 +1804,8 @@ Then, the median of the iterations where equilibrium was reached, the median of 
 
 Now we will proceed to the graphic outputs that the code launches.
 
+First, a graph called Pag is generated, which is the same as the two previous examples. A boxplot shows the price dispersion in each iteration. It can be seen that the prices are well balanced. The median is in the center, generating a low dispersion in the data for both goods.
+
 
 
 
