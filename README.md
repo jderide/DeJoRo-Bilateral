@@ -1828,9 +1828,201 @@ Finally, we will detail the code modifications for each example to measure new v
 
 #### Spider graph
 
+Two fundamental spider plots were created. One to observe the evolution of agent assignments in each trial and how close they are to the theoretical equilibrium after their iterations in each trial. The other to observe the agents' utilities and how they differ from Walras utilities and how they have evolved relative to their initial utilities.
 
+The spider graphs are subdivided, and each agent is placed in a specific trial of an example, since the logic doesn't change between examples due to changes in assignments or utilities. The code and its documentation are shown first (each generated code is placed at the end of each code).
 
+#### 1. Utilities
 
+**Documentation**
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Check BTE convergence for each trial
+for k in range(ntrials):
+    if eq_status[k] == 0:
+        print(f"Warning: The trial {k+1} did not reach equilibrium in BTE.")
+
+# Generate spider graphs for each trial
+for k in range(ntrials):
+    # Calculate initial utilities using initial allocations
+    U_initial = np.array([np.prod(EvAlloc[k][0][i,:]**Econ[k].alpha[i,:]) for i in range(Econ[k].I)])
+    
+    # Final BTE utilities (already calculated in Utilities_bte)
+    U_final_BTE = Utilities_bte[k,:]
+    
+    # Walras utilities (already calculated in Utilities_wal)
+    U_walras = Utilities_wal[k,:]
+    
+    # Create the spider chart
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+    ax.set_theta_zero_location('N')
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(np.arange(0, 360, 360/5), labels=[f'Agent {i+1}' for i in range(5)])
+    
+    # Set fixed radial axis limit from 0 to 45
+    ax.set_ylim(0, 45)
+    
+
+    # Set ticks on the radial axis every 5 units
+    ax.set_yticks(np.arange(0, 46, 5))
+    ax.set_yticklabels(np.arange(0, 46, 5))
+    
+    # Prepare the data for the chart (close the polygon)
+    theta = np.linspace(0, 2*np.pi, 5, endpoint=False)
+    theta = np.concatenate((theta, [theta[0]]))
+    
+    U_initial_plot = np.concatenate((U_initial, [U_initial[0]]))
+    U_final_BTE_plot = np.concatenate((U_final_BTE, [U_final_BTE[0]]))
+    U_walras_plot = np.concatenate((U_walras, [U_walras[0]]))
+    
+    # Plot the series with specific colors and markers
+    ax.plot(theta, U_initial_plot, label='Initial', color='b', marker='o')
+    ax.plot(theta, U_final_BTE_plot, label='Final BTE', color='r', marker='s')
+    ax.plot(theta, U_walras_plot, label='Walras', color='g', marker='^')
+    
+    # Adjust the legend to be at the top
+    ax.legend(loc='upper right', bbox_to_anchor=(0.5, -0.1), ncol=3)
+    
+    # Add title with trial number
+    ax.set_title(f'Utilities for Trial{k+1}')
+    
+    # Save the chart as PDF
+    plt.savefig(f'Utilities_trialwithoutwalras{k+1}.pdf', bbox_inches='tight')
+    plt.close()
+```
+
+The #s are the lines of text corresponding to the documentation. In the first example, two graphs had to be drawn with the utilities because Walras's utilities were very uneven with respect to BTE's utilities. This is because Walras's methods for finding equilibrium are not optimal for all agents to improve their utilities in a controlled and sustained manner. In contrast, BTE shows how utilities improve in a sustained and equal manner for all agents. The axes represent each agent, with 5 for each. The numbered circles represent the utility value, which varies by agent. The rest is specified in the graph itself.
+
+![Image](https://github.com/user-attachments/assets/ef80e9a0-1167-4a82-ab23-80c04a36b4dc)
+
+Here is the code that contains the spider graph with the Walras utilities with its respective documentation.
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Check BTE convergence for each trial
+for k in range(ntrials):
+    if eq_status[k] == 0:
+        print(f"Warning: The trial {k+1} did not reach equilibrium in BTE.")
+
+# Generate spider graphs for each trial
+for k in range(ntrials):
+    # Calculate initial utilities using initial allocations
+    U_initial = np.array([np.prod(EvAlloc[k][0][i,:]**Econ[k].alpha[i,:]) for i in range(Econ[k].I)])
+    
+    # Final BTE utilities (already calculated in Utilities_bte)
+    U_final_BTE = Utilities_bte[k,:]
+    
+    # Walras utilities (already calculated in Utilities_wal)
+    U_walras = Utilities_wal[k,:]
+    
+   # Print values to check
+    print(f"Trial {k+1}:")
+    print("U_initial:", U_initial)
+    print("U_final_BTE:", U_final_BTE)
+    print("U_walras:", U_walras)
+    
+    # Check for NaN or infinity in U_walras
+    if np.any(np.isnan(U_walras)) or np.any(np.isinf(U_walras)):
+        print(f"Trial {k+1}: U_walras contains NaN or inf")
+    elif np.all(U_walras == 0):
+        print(f"Trial {k+1}: U_walras is all zeros")
+    
+
+    # Create the spider chart
+    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
+    ax.set_theta_zero_location('N')
+    ax.set_theta_direction(-1)
+    ax.set_thetagrids(np.arange(0, 360, 360/5), labels=[f'Agent {i+1}' for i in range(5)])
+    
+    # Calculate radial axis limit dynamically
+    max_u = max(max(U_initial), max(U_final_BTE), max(U_walras))
+    ax.set_ylim(0, max_u * 1.1)
+    
+    # Set ticks on the radial axis every 5 units
+    ax.set_yticks(np.arange(0, int(max_u * 1.1) + 1, 5))
+    ax.set_yticklabels(np.arange(0, int(max_u * 1.1) + 1, 5))
+    
+    # Prepare the data for the chart (close the polygon)
+    theta = np.linspace(0, 2*np.pi, 5, endpoint=False)
+    theta = np.concatenate((theta, [theta[0]]))
+    
+    U_initial_plot = np.concatenate((U_initial, [U_initial[0]]))
+    U_final_BTE_plot = np.concatenate((U_final_BTE, [U_final_BTE[0]]))
+    U_walras_plot = np.concatenate((U_walras, [U_walras[0]]))
+    
+
+    # Plot the series with specific colors, markers, and line styles
+    ax.plot(theta, U_initial_plot, label='Initial', color='b', marker='o', markersize=8, linestyle='-', linewidth=2)
+    ax.plot(theta, U_final_BTE_plot, label='Final BTE', color='r', marker='s', markersize=8, linestyle='--', linewidth=2)
+    ax.plot(theta, U_walras_plot, label='Walras', color='g', marker='^', markersize=8, linestyle=':', linewidth=2)
+    
+    # Adjust the legend to be at the top
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3)
+    
+   # Add title with trial number
+    ax.set_title(f'Utilities for Trial {k+1}')
+    
+    # Save the chart as a PDF with high quality
+    plt.savefig(f'Utility_trialwithwalras{k+1}.pdf', bbox_inches='tight', dpi=300)
+    plt.close()
+```
+This code generates the spider graph with Walras utilities, and you can see that they are much larger than the BTE. This clearly represents a total imbalance in the agents' holdings and indicates that the Walras algorithm is very inefficient in achieving an equilibrium of holdings and utilities for all agents, as explained repeatedly above.
+
+![Image](https://github.com/user-attachments/assets/9e6a004d-dd36-408a-a7eb-b23f6ee2e508)
+
+#### Assignments
+
+**Documentation**
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Define the categories (the 10 goods)
+categories = list(range(10))
+
+# Create a spider graph for each agent and each test
+for k in range(ntrials):  # For each test (ntrials = 10)
+    for i in range(5):  # For each agent (0 to 4)
+        # Create figure with polar projection
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={'projection': 'polar'})
+        
+       # Plot initial assignments
+        initial_alloc = EvAlloc[k][0][i, :] # Initial assignment for test k and agent i
+        ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), initial_alloc, label='Initial', marker='^', color='green')
+        
+        # Plot Walras allocations
+        ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), x_we[i, :], label='Walras', marker='o', color='blue')
+        
+        # Plot BTE assignments (end of each test)
+        bte_final = Econ[k].allocations[i, :] # Final BTE assignment for test k and agent i
+        ax.plot(np.linspace(0, 2 * np.pi, len(categories), endpoint=False), bte_final, label=f'BTE Proof {k+1}', marker='s', color='red')
+        
+        # Configure axes
+        ax.set_xticks(np.linspace(0, 2 * np.pi, len(categories), endpoint=False))
+        ax.set_xticklabels([f'Good {j}' for j in categories])  # Label the assets as 'Good 0', 'Good 1', etc.
+        
+       # Adjust the y-axis range according to the data
+        all_values = list(initial_alloc) + list(x_we[i, :]) + list(bte_final)
+        max_val = max(all_values)
+        ax.set_yticks(np.arange(0, max_val + 10, step=10))
+        
+        # Title and legend
+        ax.set_title(f'Agent Assignments {i+1}, Proof {k+1}')
+
+        ax.legend(loc='upper right')
+        
+        # Save the chart
+        plt.savefig(f'Agent_Assignments_{i+1}_proof_{k+1}.pdf')
+        plt.close()
+```
+
+It can be seen in all the generated graphs that there are 10 axes this time, representing the assets of each agent, each generated graph representing the allocations for each good for each agent in each of the corresponding tests (i.e., 50 spider graphs), generating their initial and final endowments and their comparison with the Walras endowments. This demonstrates how close the allocations of each agent's asset after making the trades are to those of Walras, thus demonstrating that the equilibrium of the holdings is similar to the theoretical holdings. It is a very good approximation of what is wanted, that is, to demonstrate that the BTE algorithm is better than the latter, even matching the theoretical holdings and being better in terms of utilities for each agent, improving in a controlled and progressive manner.
+
+![Image](https://github.com/user-attachments/assets/529ca0c8-7175-459b-aac2-b6fc6bd8c53f)
 
 
 
