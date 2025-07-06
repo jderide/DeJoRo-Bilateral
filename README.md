@@ -711,11 +711,45 @@ Finally, a graph called Pbardiffs is created. It randomly selects four iteration
 
 ### Example 2
 #### Explanation
-Example 2 from the paper "Reaching an Equilibrium of Prices and Holdings of Goods Through Direct Buying and Selling"  analyzes a small economy with 3 goods (including money, \( j=0 \)) and 3 agents, using Cobb-Douglas utility functions but with highly unbalanced initial endowments to test the bilateral trade algorithm (BTS). Each agent has preferences defined by exponents \(\beta_{ij}\) (see Table 3, p. 22) and initial endowments (\(x_{i j}^0\)) where each non-monetary good is mostly concentrated in one agent (e.g., agent 2 has 80 of good 2, agent 3 has 80 of good 1).
 
-The BTS algorithm, described in Section 5, is run with a random inspection strategy to identify bilateral trade opportunities. The results of two runs (\(\nu=1, \nu=2\)) are reported in Tables 4 and 5 (p. 22). Equilibrium prices (\(\bar{p}^\nu\)) and final allocations (\(\bar{x}^\nu\)) are consistent across runs, with close prices for nonmonetary goods (e.g., \(\bar{p}_1^1 \approx 0.0475\), \(\bar{p}_1^2 \approx 0.0460\)). However, they differ significantly from the Walras equilibrium prices and allocations (\(\bar{p}^W\), \(\bar{x}^W\)), which show higher values ​​(e.g., \(\bar{p}_1^W \approx 0.4921\)).
+Example 2 in the paper "Reaching an Equilibrium of Prices and Holdings of Goods Through Direct Buying and Selling" demonstrates the bilateral trading algorithm in an economy with $n+1 = 3$ goods (including money as good $j = 0$) and $m = 3$ agents. The initial holdings are highly imbalanced, with each good predominantly held by one agent, testing the algorithm's ability to reach equilibrium. The utility functions are of Cobb-Douglas type:
 
-The example highlights that, despite the initial imbalance, bilateral trade converges to a price and allocation equilibrium, but not to the Walrasian equilibrium, reinforcing the paper's criticism of the Walrasian model's lack of market legitimacy, as it relies on a centralized mechanism rather than direct buying and selling interactions.
+$u_i(x_i) = \prod_{j=0}^{2} x_{ij}^{\beta_{ij}}$, with $0 < \beta_{ij} < 1$, $\sum_{j=0}^{2} \beta_{ij} < 1$,
+
+where $x_{ij}$ is the holding of good $j$ by agent $i$, and $\beta_{ij}$ are utility parameters. Initial holdings $x_{ij}^0$ and parameters $\beta_{ij}$ are given in Table 3, e.g., agent 2 holds most of good 2 ($x_{2,2}^0 = 80$), and agent 3 holds most of good 1 ($x_{3,1}^0 = 80$).
+
+The algorithm (Algorithm 1) facilitates bilateral trades of a single good for money, based on price thresholds:
+
+$p_{ij}(x_i) = \frac{\partial u_i / \partial x_{ij}}{\partial u_i / \partial x_{i0}}$,
+
+A trade occurs when the seller's price satisfies:
+
+$p_{i_1j}^+(x_{i_1}) = p_{i_1j}(x_{i_1}) + \delta_{i_1j}$,
+
+and the condition:
+
+$p_{i_1j}^+(x_{i_1}) \leq p_{i_2j}^-(x_{i_2}) = p_{i_2j}(x_{i_2}) - \delta_{i_2j}$,
+
+where $\delta_{ij}$ is the premium. The traded quantity is:
+
+$\xi_j = \min \{ \xi_j^+(x_{i_1}, \pi_j), \xi_j^-(x_{i_2}, \pi_j) \}$,
+
+where $\xi_j^+(x_{i_1}, \pi_j)$ and $\xi_j^-(x_{i_2}, \pi_j)$ maximize the seller's and buyer's utilities, respectively.
+
+Equilibrium prices $\bar{p}^\nu$ for runs $\nu = 1, 2$ (Table 4) and final holdings $\bar{x}_{ij}^\nu$ (Table 5) are consistent across runs despite the initial imbalance. Compared to Walrasian prices, computed via:
+
+$x_{ij} - \beta_{ij} ( \sum_{j=1}^{n} p_j x_{ij}^0 ) = \beta_{ij} x_{i0}^0$,
+
+$p_j \sum_{i=1}^{m} x_{ij}^0 - \sum_{k=1}^{n} p_k ( \sum_{i=1}^{m} \beta_{ij} x_{ij}^0 ) = \sum_{i=1}^{m} \beta_{ij} x_{i0}^0$,
+
+with:
+
+$\beta_{ij} = \frac{\beta_{ij}}{\sum_{k=0}^{n} \beta_{ik}}$,
+
+$\bar{p}_j^W = \frac{p_j}{p_0}$,
+
+the results highlight the Walrasian model's disconnect from true market dynamics.
+
 #### Code documentation
 Here the documentation for example 2 will be placed to know what each part of the code does with its respective commands. we started.
 BTE is the same for both example 1 and 2 so we start immediately with the Final2 documentation.
