@@ -2046,6 +2046,13 @@ It can be observed in all the graphs in the trial 10 of each of the agents as th
 
 -Matplotlib Development Team. (2022). Radar chart (aka spider or star chart). Recuperado el 6 de julio de 2025, de https://matplotlib.org/3.5.0/gallery/specialty_plots/radar_chart.html 
 
+-Matplotlib Development Team. (n.d.). Matplotlib: Polar scatter plot. Recuperado el 7 de julio de 2025 de https://matplotlib.org/stable/gallery/pie_and_polar_charts/polar_scatter.html 
+
+-Matplotlib Development Team. (n.d.). Matplotlib: Line2D. Recuperado el 7 de julio de 2025 de https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html#matplotlib.lines.Line2D 
+
+-Deride, J., Jofré, A., & Rockafellar, R. T. (2023, January 23). Reaching an equilibrium of prices and holdings of goods through direct buying and selling (Version 1).
+
+
 
 
 
