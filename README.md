@@ -1876,7 +1876,7 @@ Now, a graph named Evbarp is generated(Fig. 30) that shows the prices at which e
 
 A graph called Edgebox12 is then generated(Fig. 31), which deals with the same idea as the previous exercise: the agents balance their holdings until they reach a maximum level of well-being for both. You can see here how agents 1 and 2 in iteration 0 balance their non-monetary positions until they reach the optimum, where they cannot be improved further, remembering that there is no Cobb-Douglas profit. Then, you can see iteration 1 below, which ends without converging, returning to 0, as confirmed by the exercise.
 
-![Image](https://github.com/user-attachments/assets/2883f7d0-8884-405a-922f-71ed8b626582)
+<img width="911" height="682" alt="Image" src="https://github.com/user-attachments/assets/50d654e5-816a-4eaa-b86b-c03d7164406f" />
 
 *Fig. 31: graph Edgebox12*
 
