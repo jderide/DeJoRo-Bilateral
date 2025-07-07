@@ -2039,6 +2039,9 @@ It can be seen in all the generated graphs that there are 10 axes this time, rep
 
 It can be observed in all the graphs in the trial 10 of each of the agents as the BTE allocations are very similar to the Walras. It can also be observed how well each agent bought and sold to be able to reach that equilibrium, seeing perfectly how effective the algorithm is. For example, for agent 1 it can be observed that he sold 10 units of good 0, 20 units of good 1, bought 30 units of good 2, 14 units of good 3, kept the units of good 4, and so on up to good 9, thus showing how the goods of each of the agents evolve to reach the price equilibrium.
 
+#### Conclusion
+In conclusion, the BTE algorithm is more efficient than the Walras model in terms of equality of utilities and decentralization, especially in scenarios with positive holdings and flexibility in trades. However, its convergence is not guaranteed when initial holdings are zero or extremely unbalanced, as in the v=2 case of Example 3, suggesting the need for manipulation in the trading scheme to handle such cases. Experiments confirm that BTE achieves equilibria close to Walras in terms of allocations, but outperforms Walras in the equitable distribution of profits, highlighting its potential as a more realistic and dynamic market model.
+
 #### References
 -Plotly. (s.f.). Radar chart in Python. Recuperado el 5 de julio de 2025, de https://plotly.com/python/radar-chart/ 
 
