@@ -687,21 +687,21 @@ The rows and columns are then inverted, and the change in the allocations of eac
                             
 Now comes the section where you can see the graphics provided by this code.
 
-First, the code outputs the graph of Walras utilities vs. BTE(Fig. 5), placing each algorithm on the y and x axes respectively. Then, an x=y function is plotted to observe which of the two algorithms had the highest utility (Points above the function, the Walras utility is better. Points below the function, the BTE utility is better). It can be observed how all the points for each of the iterations show that the Walras utility is better, all being on the dotted function line. This is not necessarily optimal; this means that the Walras utilities for each of the agents are completely unequal. This algorithm, having restrictions, does not allow its agents to want to improve their utilities jointly such that all have a similar utility. It can be seen in the 5 points plotted in the graph that there is a large difference between the agents' utilities for Walras. BTE, on the other hand, has lower utilities but manages to compensate by making everyone's utilities similar, with no inequality between agents.
+The profit comparison graph of BTE and Walras(Fig. 5) highlights that bilateral trading (BTE) achieves profits that reflect real market dynamics, outperforming or equaling Walras' static equilibrium. The variability in BTE profits, due to randomness in the trading order, contrasts with Walras' consistency, supporting the paper's thesis that BTE is more realistic and efficient in guaranteeing utility improvements (Theorem 3, page 16).
 
-![Image](https://github.com/user-attachments/assets/30d71423-c23c-4bd1-873d-56ae1e0914da)
+<img width="869" height="643" alt="Image" src="https://github.com/user-attachments/assets/e4004e4d-6329-43da-bebe-883f149deebd" />
 
 *Fig. 5: graph of Walras utilities vs BTE*
 
-The code then generates a wealth graph(Fig. 6), which follows the same logic as the first graph. Here, we can conclude the same thing as before. BTE's wealth is similar across agents and worse than in Walras, but Walras has very unequal wealth across its agents.
+The code then generates a wealth graph(Fig. 6), which follows the same logic as the first graph. Here, we can conclude the same thing as before. Reflect a dynamic and decentralized process, with Walras equilibrium riches arising from a centralized setting. This would highlight how BTE, with its variability due to randomness in interactions, produces more diverse wealth distributions versus Walras uniformity, suggesting that BTE better captures real market dynamics by allowing for natural adjustments in holdings.
 
-![Image](https://github.com/user-attachments/assets/14c287d8-6bfa-4113-b731-ef7f5cd01000)
+<img width="863" height="640" alt="Image" src="https://github.com/user-attachments/assets/1ad4414d-7423-4e67-8e2e-c22876297b7b" />
 
 *Fig. 6: graph of Walras Wealth vs BTE*
 
-A graph of the BTE vs. Walras Gini index(Fig. 7) is then drawn, indicating the inequality between each method, using the same logic as the other two graphs. As expected, the Walras Gini is greater than the BTE and remains at 0.4, as can be seen in the graph. The BTE Gini grows steadily with each iteration, with no more than 0.10 points on the Gini index, ensuring equality between agents.
+The Gini plot(Fig. 7), generated in the Final.py code, compares the inequality in the distribution of wealth among agents under the bilateral trading scheme (BTE) and the Walras equilibrium through a scatter plot, where the $x$ axis shows the Gini index for BTE ($Gini_bte$) and the $y$ axis for Walras ($Gini_wal$), with a diagonal line $y = x$ as a reference. This graph, based on the 10 trials of the computational experiment described in the paper “Reaching an Equilibrium of Prices and Holdings of Goods Through Direct Buying and Selling”, reflects how randomness in the order of bilateral transactions (page 21) generates variability in inequality under BTE, contrasting with the static Walras distribution. The position of the dots with respect to the diagonal line indicates whether inequality is higher or lower in either model, highlighting the differences between the decentralized dynamics of BTE and the centralized approach of Walras, and supporting the paper's thesis that direct interactions produce results more representative of real markets.
 
-![Image](https://github.com/user-attachments/assets/f2ca0ea8-24fc-46de-9a9f-31c5a242ad9d)
+<img width="896" height="649" alt="Image" src="https://github.com/user-attachments/assets/a1d6a51c-a189-4497-b5d4-bad4ff36e19a" />
 
 *Fig. 7: graph of Walras gini vs BTE*
 
@@ -1959,94 +1959,15 @@ for k in range(ntrials):
     ax.set_title(f'Utilities for Trial{k+1}')
     
     # Save the chart as PDF
-    plt.savefig(f'Utilities_trialwithoutwalras{k+1}.pdf', bbox_inches='tight')
+    plt.savefig(f'Utilities_trial{k+1}.pdf', bbox_inches='tight')
     plt.close()
 ```
 
-The #s are the lines of text corresponding to the documentation. In the first example, two graphs had to be drawn with the utilities because Walras's utilities were very uneven with respect to BTE's utilities. This is because Walras's methods for finding equilibrium are not optimal for all agents to improve their utilities in a controlled and sustained manner(Fig. 34). In contrast, BTE shows how utilities improve in a sustained and equal manner for all agents. The axes represent each agent, with 5 for each. The numbered circles represent the utility value, which varies by agent. The rest is specified in the graph itself.
+The # are the lines of text corresponding to the documentation. In the first example, it can be observed that the Walras utility is very similar to the BTE utility, the difference that can be observed is a difference in utility in agent 4, where it can be observed that it is greater than the BTE utility in this agent, having a difference between the utilities of other agents, being the BTE algorithm more efficient, in calculating utilities equally for all agents, being the most similar between them by the variety of exchanges that the agents can make to improve their utilities. The axes represent each agent, with 5 for each. The numbered circles represent the utility value, which varies by agent. The rest is specified in the graph itself.
 
-![Image](https://github.com/user-attachments/assets/ef80e9a0-1167-4a82-ab23-80c04a36b4dc)
+<img width="644" height="715" alt="Image" src="https://github.com/user-attachments/assets/784b4d87-5a72-4ea4-a65c-c48ccdf11d5c" />
 
 *Fig. 34: spidergraph Utilities with Walras*
-
-Here is the code that contains the spider graph with the Walras utilities with its respective documentation.
-
-```python
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Check BTE convergence for each trial
-for k in range(ntrials):
-    if eq_status[k] == 0:
-        print(f"Warning: The trial {k+1} did not reach equilibrium in BTE.")
-
-# Generate spider graphs for each trial
-for k in range(ntrials):
-    # Calculate initial utilities using initial allocations
-    U_initial = np.array([np.prod(EvAlloc[k][0][i,:]**Econ[k].alpha[i,:]) for i in range(Econ[k].I)])
-    
-    # Final BTE utilities (already calculated in Utilities_bte)
-    U_final_BTE = Utilities_bte[k,:]
-    
-    # Walras utilities (already calculated in Utilities_wal)
-    U_walras = Utilities_wal[k,:]
-    
-   # Print values to check
-    print(f"Trial {k+1}:")
-    print("U_initial:", U_initial)
-    print("U_final_BTE:", U_final_BTE)
-    print("U_walras:", U_walras)
-    
-    # Check for NaN or infinity in U_walras
-    if np.any(np.isnan(U_walras)) or np.any(np.isinf(U_walras)):
-        print(f"Trial {k+1}: U_walras contains NaN or inf")
-    elif np.all(U_walras == 0):
-        print(f"Trial {k+1}: U_walras is all zeros")
-    
-
-    # Create the spider chart
-    fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-    ax.set_theta_zero_location('N')
-    ax.set_theta_direction(-1)
-    ax.set_thetagrids(np.arange(0, 360, 360/5), labels=[f'Agent {i+1}' for i in range(5)])
-    
-    # Calculate radial axis limit dynamically
-    max_u = max(max(U_initial), max(U_final_BTE), max(U_walras))
-    ax.set_ylim(0, max_u * 1.1)
-    
-    # Set ticks on the radial axis every 5 units
-    ax.set_yticks(np.arange(0, int(max_u * 1.1) + 1, 5))
-    ax.set_yticklabels(np.arange(0, int(max_u * 1.1) + 1, 5))
-    
-    # Prepare the data for the chart (close the polygon)
-    theta = np.linspace(0, 2*np.pi, 5, endpoint=False)
-    theta = np.concatenate((theta, [theta[0]]))
-    
-    U_initial_plot = np.concatenate((U_initial, [U_initial[0]]))
-    U_final_BTE_plot = np.concatenate((U_final_BTE, [U_final_BTE[0]]))
-    U_walras_plot = np.concatenate((U_walras, [U_walras[0]]))
-    
-
-    # Plot the series with specific colors, markers, and line styles
-    ax.plot(theta, U_initial_plot, label='Initial', color='b', marker='o', markersize=8, linestyle='-', linewidth=2)
-    ax.plot(theta, U_final_BTE_plot, label='Final BTE', color='r', marker='s', markersize=8, linestyle='--', linewidth=2)
-    ax.plot(theta, U_walras_plot, label='Walras', color='g', marker='^', markersize=8, linestyle=':', linewidth=2)
-    
-    # Adjust the legend to be at the top
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3)
-    
-   # Add title with trial number
-    ax.set_title(f'Utilities for Trial {k+1}')
-    
-    # Save the chart as a PDF with high quality
-    plt.savefig(f'Utility_trialwithwalras{k+1}.pdf', bbox_inches='tight', dpi=300)
-    plt.close()
-```
-This code generates the spider graph with Walras utilities, and you can see that they are much larger than the BTE(Fig. 35). This clearly represents a total imbalance in the agents' holdings and indicates that the Walras algorithm is very inefficient in achieving an equilibrium of holdings and utilities for all agents, as explained repeatedly above.
-
-![Image](https://github.com/user-attachments/assets/9e6a004d-dd36-408a-a7eb-b23f6ee2e508)
-
-*Fig. 35: spidergraph Utilities without Walras*
 
 #### Assignments
 
@@ -2096,15 +2017,33 @@ for k in range(ntrials):  # For each test (ntrials = 10)
 
 It can be seen in all the generated graphs that there are 10 axes this time, representing the assets of each agent, each generated graph representing the allocations for each good for each agent in each of the corresponding tests (i.e., 50 spider graphs), generating their initial and final endowments and their comparison with the Walras endowments. This demonstrates how close the allocations of each agent's asset after making the trades are to those of Walras, thus demonstrating that the equilibrium of the holdings is similar to the theoretical holdings. It is a very good approximation of what is wanted, that is, to demonstrate that the BTE algorithm is better than the latter, even matching the theoretical holdings and being better in terms of utilities for each agent, improving in a controlled and progressive manner(Fig. 36).
 
+<img width="752" height="701" alt="Image" src="https://github.com/user-attachments/assets/493f9060-ef64-4d68-9a50-b7e234160f8c" />
+
+*Fig. 35: spidergraph assignments agent 1 example 1*
+
+<img width="741" height="699" alt="Image" src="https://github.com/user-attachments/assets/f33c98db-926b-4127-88bc-1240aa2d1f35" />
+
+*Fig. 36: spidergraph assignments agent 2 example 1*
+
+<img width="747" height="697" alt="Image" src="https://github.com/user-attachments/assets/5f8c58aa-a955-4244-ab87-edb9d4a24f7b" />
+
+*Fig. 37: spidergraph assignments agent 3 example 1*
+
 ![Image](https://github.com/user-attachments/assets/529ca0c8-7175-459b-aac2-b6fc6bd8c53f)
 
-*Fig. 36: spidergraph assignments*
+*Fig. 38: spidergraph assignments agent 4 example 1*
 
+<img width="747" height="709" alt="Image" src="https://github.com/user-attachments/assets/32d9d51f-8174-4ae7-b641-9e5820168602" />
 
+*Fig. 39: spidergraph assignments agent 5 example 1*
+
+It can be observed in all the graphs in the trial 10 of each of the agents as the BTE allocations are very similar to the Walras. It can also be observed how well each agent bought and sold to be able to reach that equilibrium, seeing perfectly how effective the algorithm is. For example, for agent 1 it can be observed that he sold 10 units of good 0, 20 units of good 1, bought 30 units of good 2, 14 units of good 3, kept the units of good 4, and so on up to good 9, thus showing how the goods of each of the agents evolve to reach the price equilibrium.
 
 #### References
 -Plotly. (s.f.). Radar chart in Python. Recuperado el 5 de julio de 2025, de https://plotly.com/python/radar-chart/ 
+
 -Python Graph Gallery. (s.f.). Web radar chart with Matplotlib. Recuperado el 5 de julio de 2025, de https://python-graph-gallery.com/web-radar-chart-with-matplotlib/ 
+
 -Matplotlib Development Team. (2022). Radar chart (aka spider or star chart). Recuperado el 6 de julio de 2025, de https://matplotlib.org/3.5.0/gallery/specialty_plots/radar_chart.html 
 
 
