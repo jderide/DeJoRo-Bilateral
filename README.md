@@ -2102,6 +2102,10 @@ It can be seen in all the generated graphs that there are 10 axes this time, rep
 
 
 
+#### References
+-Plotly. (s.f.). Radar chart in Python. Recuperado el 5 de julio de 2025, de https://plotly.com/python/radar-chart/ 
+-Python Graph Gallery. (s.f.). Web radar chart with Matplotlib. Recuperado el 5 de julio de 2025, de https://python-graph-gallery.com/web-radar-chart-with-matplotlib/ 
+-Matplotlib Development Team. (2022). Radar chart (aka spider or star chart). Recuperado el 6 de julio de 2025, de https://matplotlib.org/3.5.0/gallery/specialty_plots/radar_chart.html 
 
 
 
